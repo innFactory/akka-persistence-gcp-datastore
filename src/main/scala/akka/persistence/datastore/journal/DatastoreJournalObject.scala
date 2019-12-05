@@ -79,7 +79,7 @@ object DatastoreJournalObject {
 
     var result: Seq[Entity] = Seq.empty[Entity]
     results.forEachRemaining(x => {
-      result = result :+ x
+      result = x +: result
     })
     var messagesToReplay = result.map(dbObject => datastoreEntityToPersistentRepr(dbObject, f)).flatten
     messagesToReplay
