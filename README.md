@@ -51,3 +51,5 @@ To test this plugin
 2. ``` gcloud beta emulators datastore start --no-store-on-disk ```
 
 3. Set Env Variable ```DATASTORE_TESTHOST=http://<host>:<port>``` of datastore emulator
+
+4. Execute ````sbt run````
