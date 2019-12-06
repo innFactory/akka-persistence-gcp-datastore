@@ -4,7 +4,7 @@ val circeVersion = "0.12.3"
 organization := "de.innfactory"
 
 name := "akka-persistence-gcp-datastore"
-version := "0.1.0"
+version := "0.2.0"
 
 scalaVersion := scalaVer
 scalacOptions ++= Seq(
@@ -26,10 +26,11 @@ libraryDependencies ++= Seq(
   "com.google.cloud"    %  "google-cloud-datastore"      % "1.101.0",
   "io.circe"            %% "circe-core" % circeVersion,
   "io.circe"            %% "circe-generic" % circeVersion,
-  "io.circe"            %% "circe-parser" % circeVersion
+  "io.circe"            %% "circe-parser" % circeVersion,
+  "com.typesafe.akka" %% "akka-persistence-tck" % "2.6.0"
 )
 
-
+testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 
 lazy val root = (project in file(".")).
   settings(

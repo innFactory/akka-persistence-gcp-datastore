@@ -1,5 +1,7 @@
 package akka.persistence.datastore.connection
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.TransportOptions
+import com.google.cloud.datastore.testing.LocalDatastoreHelper
 import com.google.cloud.datastore.{Datastore, DatastoreOptions}
 import com.typesafe.config.ConfigFactory
 
@@ -11,17 +13,37 @@ object DatastoreConnection {
 
   private val config = ConfigFactory.load()
   private val projectId = config.getString("datastore.projectid")
+  private val localDatastoreHost = config.getString("datastore.testhost")
 
-  private val serviceAccountDatastore =
+
+  val datastore: Datastore = getDatastoreService
+
+
+  def getDatastoreService : Datastore = {
+    if(sys.props.get("testing").getOrElse("false") == "true") {
+      // CreateDatastore for test
+      DatastoreOptions.newBuilder
+        .setHost(localDatastoreHost)
+        .setTransportOptions(DatastoreOptions.getDefaultHttpTransportOptions)
+        .build
+        .getService
+    } else {
+      // CreateDatastore for prod
+      initProductionDatastore
+    }
+  }
+
+  def initProductionDatastore: Datastore = {
+    val serviceAccountDatastore =
     getClass()
       .getClassLoader()
       .getResourceAsStream("datastore.json")
-
-  private val options: DatastoreOptions = DatastoreOptions.newBuilder
-    .setProjectId(projectId)
-    .setCredentials(GoogleCredentials.fromStream(serviceAccountDatastore))
-    .build
-  private val datastore: Datastore = options.getService
+    val options: DatastoreOptions = DatastoreOptions.newBuilder
+      .setProjectId(projectId)
+      .setCredentials(GoogleCredentials.fromStream(serviceAccountDatastore))
+      .build
+    options.getService
+  }
 
   // Google Datastore Service
   def datastoreService = {

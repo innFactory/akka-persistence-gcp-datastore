@@ -9,8 +9,11 @@ object DatastoreCommon {
   val snapshotKind = "snapshot"
   val persistenceIdKey = "persistenceId"
   val sequenceNrKey = "sequenceNr"
+  val timestampKey = "timestamp"
   val messageKey: String = "message"
   val markerKey: String = "marker"
+  val payloadKey: String = "payload"
+  val writerUUID: String = "writerUUID"
 }
 
 trait DatastoreCommon {
@@ -29,4 +32,10 @@ trait DatastoreJournalCommon extends DatastoreCommon {
   override protected val configRootKey: String = "gcp-datastore-journal"
   protected def rejectNonSerializableObjectsKey: String = "reject-non-serializable-objects"
   lazy val rejectNonSerializableObjectId: Boolean = config.getBoolean(rejectNonSerializableObjectsKey)
+}
+
+trait DatastoreSnapshotCommon extends DatastoreCommon {
+  override protected val configRootKey: String = "gcp-datastore-snapshot"
+  val snapshotKey: String = "snapshot"
+  val timestampKey = "timestamp"
 }

@@ -13,6 +13,17 @@
           - name: sequenceNr
             direction: desc
     
+      - kind: snapshot
+        properties:
+          - name: persistenceId
+          - name: timestamp
+            direction: desc
+    
+      - kind: snapshot
+        properties:
+          - name: persistenceId
+          - name: timestamp
+    
     ```
     index.yml
 
@@ -28,3 +39,15 @@
     ```
     src/main/resources/datastore.json
     ```
+    
+### Testing
+
+To test this plugin 
+
+(Source: https://cloud.google.com/datastore/docs/tools/datastore-emulator)
+
+1. ``` gcloud components install cloud-datastore-emulator ```
+
+2. ``` gcloud beta emulators datastore start --no-store-on-disk ```
+
+3. Set Env Variable ```DATASTORE_TESTHOST=http://<host>:<port>``` of datastore emulator
