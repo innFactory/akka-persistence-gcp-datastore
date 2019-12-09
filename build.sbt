@@ -1,4 +1,5 @@
 val akkaVer = "2.5.23"
+val akkaQueryVer = "2.6.1"
 val scalaVer = "2.13.1"
 val circeVersion = "0.12.3"
 organization := "de.innfactory"
@@ -24,10 +25,12 @@ libraryDependencies ++= Seq(
 
   "com.typesafe.akka"   %% "akka-persistence"            % akkaVer                % "compile",
   "com.google.cloud"    %  "google-cloud-datastore"      % "1.101.0",
-  "io.circe"            %% "circe-core" % circeVersion,
-  "io.circe"            %% "circe-generic" % circeVersion,
-  "io.circe"            %% "circe-parser" % circeVersion,
-  "com.typesafe.akka" %% "akka-persistence-tck" % "2.6.0"
+  "com.typesafe.akka"   %% "akka-persistence-query"      % akkaQueryVer ,
+  "io.circe"            %% "circe-core"                  % circeVersion,
+  "io.circe"            %% "circe-generic"               % circeVersion,
+  "io.circe"            %% "circe-parser"                % circeVersion,
+  "com.typesafe.akka"   %% "akka-persistence-tck"        % "2.6.0",
+  "com.fasterxml.uuid" % "java-uuid-generator" % "3.2.0"
 )
 
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")

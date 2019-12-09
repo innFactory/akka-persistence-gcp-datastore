@@ -6,6 +6,10 @@ import akka.actor.ActorLogging
 import akka.persistence.PersistentRepr
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.datastore._
+import akka.persistence.journal.Tagged
+import akka.persistence.query.TimeBasedUUID
+import com.fasterxml.uuid.Generators
+import com.google.api.client.util.DateTime
 import com.google.cloud.datastore.ReadOption.EventualConsistency
 import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 import com.google.cloud.datastore._
@@ -21,17 +25,23 @@ object DatastoreJournalObject {
   private val markerKey = DatastoreCommon.markerKey
   private val payloadKey = DatastoreCommon.payloadKey
   private val kind = DatastoreCommon.journalKind
+  private val tagsKey = DatastoreCommon.tagsKey
+  private val timeBasedUUIDKey = DatastoreCommon.timeBasedUUIDKey
+  private val timestampKey = DatastoreCommon.timestampKey
 
-  def persistentReprToDatastoreEntity(persistentRepr: PersistentRepr, f: Any => Array[Byte])(implicit rejectNonSerializableObjects: Boolean): Try[Entity] = {
-
-    val errorMsg: String = "Unable to serialize payload for"
-    val pidMsg: String = s"PersistenceId: ${persistentRepr.persistenceId}"
-    val snrMsg: String = s"SequenceId: ${persistentRepr.sequenceNr}"
-
+  def persistentReprToDatastoreEntity(persistentRepr: PersistentRepr, tagList: List[String], f: Any => Array[Byte])(implicit rejectNonSerializableObjects: Boolean): Try[Entity] = {
     val uuid = UUID.randomUUID()
+    val timeBasedUUID = Generators.timeBasedGenerator().generate()
     val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
     val key = keyFactory.newKey(uuid.toString)
     def marker(): String = if (persistentRepr.deleted) "D" else ""
+    def tagListToValueList: ListValue = {
+      val lv: ListValue.Builder = ListValue.newBuilder()
+      tagList.foreach(t => {
+        lv.addValue(t)
+      })
+      lv.build()
+    }
     def toEntity(value: Array[Byte]) = {
       val dataString: Blob = Blob.copyFrom(value)
       Entity
@@ -41,9 +51,21 @@ object DatastoreJournalObject {
         .set(sequenceNrKey, persistentRepr.sequenceNr)
         .set(markerKey, marker())
         .set(writerUUIDKey, persistentRepr.writerUuid)
+        .set(tagsKey, tagListToValueList)
+        .set(timeBasedUUIDKey, timeBasedUUID.toString)
+        .set(timestampKey, timeBasedUUID.timestamp())
         .build
     }
-    Success(toEntity(f(persistentRepr.payload)))
+    println(persistentRepr.payload.getClass.toString)
+    val payload = persistentRepr.payload match {
+      case t: Tagged => {
+        println("Tagged Payload")
+        t.payload
+      }
+      case a => a
+    }
+
+    Success(toEntity(f(payload)))
 
   }
 
@@ -56,9 +78,11 @@ object DatastoreJournalObject {
       persistenceId = persistenceEntity.getString(persistenceIdKey),
       sequenceNr = persistenceEntity.getLong(sequenceNrKey),
       deleted = persistenceEntity.getString(markerKey).equals("D"),
-      writerUuid = persistenceEntity.getString(writerUUIDKey)
+      writerUuid = persistenceEntity.getString(writerUUIDKey),
     )
-    Some(persistenceRepr)
+    Some(
+     persistenceRepr
+    )
   }
 
 
@@ -151,9 +175,9 @@ trait  DatastoreJournalObject extends DatastorePersistence
     1
   }
 
-  protected def persistentReprToDBObject(persistentRepr: PersistentRepr)
+  protected def persistentReprToDBObject(persistentRepr: PersistentRepr, tagList: List[String])
     (implicit rejectNonSerializableObjects: Boolean): Try[Entity] =
-    persistentReprToDatastoreEntity(persistentRepr, serialise)
+    persistentReprToDatastoreEntity(persistentRepr, tagList, serialise)
 
 
   def replay(persistenceId: String, fromSequenceNr: Long,
