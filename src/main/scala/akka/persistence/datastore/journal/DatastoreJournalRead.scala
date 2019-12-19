@@ -3,9 +3,8 @@ import java.util.UUID
 
 import akka.NotUsed
 import akka.actor.ExtendedActorSystem
-import akka.persistence.datastore.{DatastoreCommon, DatastorePersistence}
+import akka.persistence.datastore.{DatastoreCommon }
 import akka.persistence.datastore.connection.DatastoreConnection
-import akka.persistence.datastore.journal.DatastoreJournalObject.{kind, persistenceIdKey, sequenceNrKey}
 import akka.persistence.query._
 import akka.persistence.query.scaladsl.ReadJournal
 import akka.serialization.SerializationExtension
@@ -16,7 +15,6 @@ import com.google.cloud.datastore._
 import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 import com.typesafe.config.Config
 import akka.stream.javadsl.{Source => JavaSource}
-import com.fasterxml.uuid.Generators
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
@@ -55,11 +53,11 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config) 
     * */
   override def eventsByTag(tag: String, offset: Offset): Source[EventEnvelope, NotUsed] = offset match {
     case Sequence(o) =>
-      throw new IllegalArgumentException("Datastore Journal does not support sequence based offsets")
+      Source.fromGraph(new PersistenceEventsByTagSource(tag, o, refreshInterval))
     case NoOffset => eventsByTag(tag, Sequence(0L)) //recursive
-    case TimeBasedUUID(value) => Source.fromGraph(new PersistenceEventsByTagSource(tag, value, refreshInterval))
+    case TimeBasedUUID(value) => Source.fromGraph(new PersistenceEventsByTagSource(tag, value.timestamp(), refreshInterval))
     case _ =>
-      throw new IllegalArgumentException("MyJournal does not support " + offset.getClass.getName + " offsets")
+      throw new IllegalArgumentException("Datastore Journal does not support " + offset.getClass.getName + " offsets")
   }
 
   override def eventsByPersistenceId(
@@ -107,7 +105,7 @@ class DatastoreJavadslReadJournal(scaladslReadJournal: DatastoreScaladslReadJour
 
 }
 
-class PersistenceEventsByTagSource(tag: String, uuid: UUID, refreshInterval: FiniteDuration)
+class PersistenceEventsByTagSource(tag: String, timestamp: Long, refreshInterval: FiniteDuration)
   extends GraphStage[SourceShape[EventEnvelope]] {
 
   private case object Continue
@@ -125,12 +123,9 @@ class PersistenceEventsByTagSource(tag: String, uuid: UUID, refreshInterval: Fin
 
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) with OutHandler {
-      lazy val system = materializer.system
       private val Limit = 1000
-      private var currenttimeBasedUUID = uuid
-      private var currenttimeBasedUUIDStamp = uuid.timestamp()
+      private var currentTimestamp = timestamp
       private var buf = Vector.empty[EventEnvelope]
-      private val serialization = SerializationExtension(system)
 
       override def preStart(): Unit = {
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
@@ -141,6 +136,13 @@ class PersistenceEventsByTagSource(tag: String, uuid: UUID, refreshInterval: Fin
         tryPush()
       }
 
+      setHandler(out, new OutHandler {
+        override def onPull(): Unit = {
+          query()
+          tryPush()
+        }
+      })
+
       override def onDownstreamFinish(): Unit = {
         // close connection if responsible for doing so
       }
@@ -148,7 +150,7 @@ class PersistenceEventsByTagSource(tag: String, uuid: UUID, refreshInterval: Fin
       private def query(): Unit = {
         if (buf.isEmpty) {
           try {
-            buf = Select.run(tag, currenttimeBasedUUIDStamp , Limit)
+            buf = Select.run(tag, currentTimestamp , Limit)
           } catch {
             case NonFatal(e) =>
               failStage(e)
@@ -186,10 +188,9 @@ class PersistenceEventsByTagSource(tag: String, uuid: UUID, refreshInterval: Fin
             val b = Vector.newBuilder[EventEnvelope]
             while (results.hasNext) {
               val next = results.next()
-              currenttimeBasedUUIDStamp =  next.getLong(timeBasedUUIDKey)
-              currenttimeBasedUUID = UUID.fromString(next.getString(timestampKey))
+              currentTimestamp =  next.getLong(timestampKey)
               b += EventEnvelope(
-                Offset.timeBasedUUID(currenttimeBasedUUID),
+                Offset.sequence(currentTimestamp),
                 next.getString(persistenceIdKey),
                 next.getLong(sequenceNrKey),
                 DatastoreCommon.deserialise(next.getBlob(payloadKey).toByteArray))
@@ -216,12 +217,12 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
 
   override protected def initialAttributes: Attributes = Attributes(ActorAttributes.IODispatcher)
 
+
+
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) with OutHandler {
-      lazy val system = materializer.system
       private val Limit = 1000
       private var buf = Vector.empty[EventEnvelope]
-      private val serialization = SerializationExtension(system)
 
       override def preStart(): Unit = {
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
@@ -231,6 +232,13 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
         query()
         tryPush()
       }
+
+      setHandler(out, new OutHandler {
+        override def onPull(): Unit = {
+          query()
+          tryPush()
+        }
+      })
 
       override def onDownstreamFinish(): Unit = {
         // close connection if responsible for doing so
@@ -267,7 +275,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
               Query.newEntityQueryBuilder()
                 .setKind(kind)
                 .setFilter(CompositeFilter.and(
-                  PropertyFilter.eq(persistenceIdKey, persistenceId),
+                  PropertyFilter.eq(persistenceIdKey,id),
                   PropertyFilter.ge(sequenceNrKey, from),
                   PropertyFilter.le(sequenceNrKey, to),
                 ))

@@ -42,7 +42,6 @@ import scala.concurrent._
       while(results.hasNext) {
         result = results.next.getKey +: result
       }
-      print("NOW DELETING SNAPSHOTS ONLY WITH META")
       val res = DatastoreConnection.datastoreService.delete(result: _*)
       Future(res)
     }
@@ -65,7 +64,6 @@ import scala.concurrent._
           val next = results.next()
           if (next.getLong(sequenceNrKey) <= criteria.maxSequenceNr && next
                 .getLong(sequenceNrKey) >= criteria.minSequenceNr) {
-            print("DELETE SNAPSHOT " + criteria.toString)
             result = next.getKey +: result
           }
       }
@@ -79,7 +77,7 @@ import scala.concurrent._
     // may succeed.
     override def loadAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Option[SelectedSnapshot]] = {
       try {
-        println("LOAD ASYNX")
+
         val query: StructuredQuery[Entity] =
           Query.newEntityQueryBuilder()
             .setKind(kind)

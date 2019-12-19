@@ -56,10 +56,8 @@ object DatastoreJournalObject {
         .set(timestampKey, timeBasedUUID.timestamp())
         .build
     }
-    println(persistentRepr.payload.getClass.toString)
     val payload = persistentRepr.payload match {
       case t: Tagged => {
-        println("Tagged Payload")
         t.payload
       }
       case a => a
@@ -123,7 +121,7 @@ object DatastoreJournalObject {
     }
 
     val messagesToReplay = result.take(maxNumberOfMessages).map(dbObject => datastoreEntityToPersistentRepr(dbObject, f)).flatten
-    println(s"REPLAY Execute ${fromSequenceNr} to ${toSequenceNr} for ${maxNumberOfMessages} resulting ${result.length} and ${messagesToReplay.length}" )
+    // println(s"REPLAY Execute ${fromSequenceNr} to ${toSequenceNr} for ${maxNumberOfMessages} resulting ${result.length} and ${messagesToReplay.length}" )
     messagesToReplay
   }
 

@@ -51,8 +51,9 @@ private[journal] class DatastoreJournal extends AsyncWriteJournal
 
   private def persistentReprGetTags(persistentRepr: PersistentRepr): List[String] = {
     persistentRepr.payload match {
-      case t: Tagged =>
+      case t: Tagged => {
         t.tags.toList
+      }
       case _ =>
        List.empty[String]
     }

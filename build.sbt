@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "io.circe"            %% "circe-generic"               % circeVersion,
   "io.circe"            %% "circe-parser"                % circeVersion,
   "com.typesafe.akka"   %% "akka-persistence-tck"        % "2.6.0",
-  "com.fasterxml.uuid" % "java-uuid-generator" % "3.2.0"
+  "com.fasterxml.uuid"  %  "java-uuid-generator"         % "3.2.0" % "compile",
 )
 
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
