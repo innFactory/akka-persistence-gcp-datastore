@@ -2,11 +2,12 @@ package akka.persistence.datastore.journal.read
 
 import akka.NotUsed
 import akka.actor.ExtendedActorSystem
-import akka.persistence.datastore.journal.read.sources.PersistenceEventsByTagSource
+import akka.persistence.datastore.journal.read.sources.{CurrentPersistenceIdsSource, PersistenceEventsByPersistenceIdSource, PersistenceEventsByTagSource, PersistenceIdsSource}
 import akka.persistence.query._
 import akka.persistence.query.scaladsl.ReadJournal
 import akka.stream.scaladsl.Source
 import com.typesafe.config.Config
+
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
 
@@ -44,18 +45,15 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config) 
                                       fromSequenceNr: Long,
                                       toSequenceNr: Long
                                     ): Source[EventEnvelope, NotUsed] = {
-    // implement in a similar way as eventsByTag
-    ???
+    Source.fromGraph(new PersistenceEventsByPersistenceIdSource(persistenceId, fromSequenceNr, toSequenceNr, refreshInterval, system))
   }
 
   override def persistenceIds(): Source[String, NotUsed] = {
-    // implement in a similar way as eventsByTag
-    ???
+    Source.fromGraph(new PersistenceIdsSource(refreshInterval, system))
   }
 
   override def currentPersistenceIds(): Source[String, NotUsed] = {
-    // implement in a similar way as eventsByTag
-    ???
+    Source.fromGraph(new CurrentPersistenceIdsSource(refreshInterval, system))
   }
 
 }

@@ -5,31 +5,24 @@ import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedPayload}
 import akka.persistence.query._
-import akka.stream.{ActorAttributes, Attributes, Outlet, SourceShape}
 import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic}
-import com.google.cloud.datastore._
+import akka.stream.{ActorAttributes, Attributes, Outlet, SourceShape}
 import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
+import com.google.cloud.datastore._
+
 import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NonFatal
 
-
-class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long, refreshInterval: FiniteDuration, system: ExtendedActorSystem)
-  extends GraphStage[SourceShape[EventEnvelope]] {
-
-  private val datastoreSerializer = new DatastoreSerializer(system)
+class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActorSystem)
+  extends GraphStage[SourceShape[String]] {
 
   private case object Continue
-  val out: Outlet[EventEnvelope] = Outlet(
+  val out: Outlet[String] = Outlet(
     "PersistenceIdsSource.out"
   )
-  override def shape: SourceShape[EventEnvelope] = SourceShape(out)
-  private val sequenceNrKey = DatastoreCommon.sequenceNrKey
+  override def shape: SourceShape[String] = SourceShape(out)
   private val persistenceIdKey = DatastoreCommon.persistenceIdKey
-  private val payloadKey = DatastoreCommon.payloadKey
   private val kind = DatastoreCommon.journalKind
-  private val tagsKey = DatastoreCommon.tagsKey
-  private val serializerKey = DatastoreCommon.serializerKey
-  private val manifestKey = DatastoreCommon.manifestKey
 
   override protected def initialAttributes: Attributes =
     Attributes(ActorAttributes.IODispatcher)
@@ -37,7 +30,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) with OutHandler {
       private val Limit = 1000
-      private var buf = Vector.empty[EventEnvelope]
+      private var buf = Vector.empty[String]
 
       override def preStart(): Unit = {
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
@@ -63,7 +56,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
         if (buf.isEmpty) {
           try {
             buf =
-              Select.run(persistenceId, fromSequenceNr, toSequenceNr, Limit)
+              Select.run(Limit)
           } catch {
             case NonFatal(e) =>
               failStage(e)
@@ -85,51 +78,26 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
       }
 
       object Select {
-        def run(id: String,
-                from: Long,
-                to: Long,
-                limit: Int): Vector[EventEnvelope] = {
+        def run(limit: Int): Vector[String] = {
           try {
             val query: StructuredQuery[Entity] =
               Query
                 .newEntityQueryBuilder()
-                .setKind(kind)
-                .setFilter(
-                  CompositeFilter.and(
-                    PropertyFilter.eq(persistenceIdKey, id),
-                    PropertyFilter.ge(sequenceNrKey, from),
-                    PropertyFilter.le(sequenceNrKey, to),
-                  )
-                )
-                .setOrderBy(OrderBy.asc(sequenceNrKey))
-                .setLimit(limit)
+                .setKind(kind).setLimit(limit)
                 .build()
             val results: QueryResults[Entity] =
               DatastoreConnection.datastoreService
                 .run(query, ReadOption.eventualConsistency)
-            val b = Vector.newBuilder[EventEnvelope]
+            val b = Vector.newBuilder[String]
             while (results.hasNext) {
               val next = results.next()
-              b += EventEnvelope(
-                NoOffset,
-                next.getString(persistenceIdKey),
-                next.getLong(sequenceNrKey),
-                datastoreSerializer.deserialize(
-                  SerializedPayload(
-                    next.getBlob(payloadKey).toByteArray,
-                    next.getLong(serializerKey).toInt,
-                    next.getString(manifestKey)
-                  )
-                )
-              )
+              b += next.getString(persistenceIdKey)
             }
             b.result()
           }
         }
       }
     }
-
-
   }
 
 
