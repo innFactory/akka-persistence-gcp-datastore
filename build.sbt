@@ -23,14 +23,15 @@ logBuffered in Test := false
 
 libraryDependencies ++= Seq(
 
-  "com.typesafe.akka"   %% "akka-persistence"            % akkaVer                % "compile",
-  "com.google.cloud"    %  "google-cloud-datastore"      % "1.101.0",
-  "com.typesafe.akka"   %% "akka-persistence-query"      % akkaQueryVer ,
-  "io.circe"            %% "circe-core"                  % circeVersion,
-  "io.circe"            %% "circe-generic"               % circeVersion,
-  "io.circe"            %% "circe-parser"                % circeVersion,
-  "com.typesafe.akka"   %% "akka-persistence-tck"        % "2.6.0",
-  "com.fasterxml.uuid"  %  "java-uuid-generator"         % "3.2.0" % "compile",
+  "com.typesafe.akka"             %% "akka-persistence"            % akkaVer                % "compile",
+  "com.fasterxml.uuid"            %  "java-uuid-generator"         % "3.2.0"                % "compile",
+  "com.typesafe.akka" %% "akka-serialization-jackson" % "2.6.1",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.1",
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.1" % "compile",
+  "com.typesafe.play"             %% "play-json"                   % "2.8.1"                % "compile",
+  "com.google.cloud"              %  "google-cloud-datastore"      % "1.101.0",
+  "com.typesafe.akka"             %% "akka-persistence-query"      % akkaQueryVer ,
+  "com.typesafe.akka"             %% "akka-persistence-tck"        % "2.6.0"
 )
 
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
