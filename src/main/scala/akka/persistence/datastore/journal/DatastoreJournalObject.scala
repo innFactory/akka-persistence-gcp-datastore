@@ -1,11 +1,13 @@
 package akka.persistence.datastore.journal
 
+import java.io.NotSerializableException
 import java.util.UUID
 
 import akka.actor.ActorLogging
 import akka.persistence.PersistentRepr
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.datastore._
+import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedPayload}
 import akka.persistence.journal.Tagged
 import akka.persistence.query.TimeBasedUUID
 import com.fasterxml.uuid.Generators
@@ -28,8 +30,10 @@ object DatastoreJournalObject {
   private val tagsKey = DatastoreCommon.tagsKey
   private val timeBasedUUIDKey = DatastoreCommon.timeBasedUUIDKey
   private val timestampKey = DatastoreCommon.timestampKey
+  private val serializerKey = DatastoreCommon.serializerKey
+  private val manifestKey = DatastoreCommon.manifestKey
 
-  def persistentReprToDatastoreEntity(persistentRepr: PersistentRepr, tagList: List[String], f: Any => Array[Byte])(implicit rejectNonSerializableObjects: Boolean): Try[Entity] = {
+  def persistentReprToDatastoreEntity(persistentRepr: PersistentRepr, tagList: List[String], f: Any => SerializedPayload)(implicit rejectNonSerializableObjects: Boolean): Try[Entity] = {
     val uuid = UUID.randomUUID()
     val timeBasedUUID = Generators.timeBasedGenerator().generate()
     val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
@@ -42,8 +46,8 @@ object DatastoreJournalObject {
       })
       lv.build()
     }
-    def toEntity(value: Array[Byte]) = {
-      val dataString: Blob = Blob.copyFrom(value)
+    def toEntity(value: SerializedPayload) = {
+      val dataString: Blob = Blob.copyFrom(value.data)
       Entity
         .newBuilder(key)
         .set(payloadKey, BlobValue.newBuilder(dataString).setExcludeFromIndexes(true).build())
@@ -54,25 +58,24 @@ object DatastoreJournalObject {
         .set(tagsKey, tagListToValueList)
         .set(timeBasedUUIDKey, timeBasedUUID.toString)
         .set(timestampKey, timeBasedUUID.timestamp())
+        .set(serializerKey, value.serializerId)
+        .set(manifestKey, value.manifest)
         .build
     }
     val payload = persistentRepr.payload match {
-      case t: Tagged => {
-        t.payload
-      }
+      case tagged: Tagged => tagged.payload
       case a => a
     }
-
     Success(toEntity(f(payload)))
 
   }
 
-  def datastoreEntityToPersistentRepr(persistenceEntity: Entity, f: Array[Byte] =>
-      Any): Option[PersistentRepr] = {
+  def datastoreEntityToPersistentRepr(persistenceEntity: Entity, f: SerializedPayload =>
+     Any): Option[PersistentRepr] = {
     if (persistenceEntity.getString(markerKey) == "D") return None
     val payload = persistenceEntity.getBlob(payloadKey)
     var persistenceRepr = PersistentRepr.apply(
-      payload = f(payload.toByteArray),
+      payload = f(SerializedPayload(payload.toByteArray, persistenceEntity.getLong(serializerKey).toInt, persistenceEntity.getString(manifestKey))),
       persistenceId = persistenceEntity.getString(persistenceIdKey),
       sequenceNr = persistenceEntity.getLong(sequenceNrKey),
       deleted = persistenceEntity.getString(markerKey).equals("D"),
@@ -102,7 +105,7 @@ object DatastoreJournalObject {
   }
 
   def replayExecute(persistenceId: String, fromSequenceNr: Long,
-                          toSequenceNr: Long, maxNumberOfMessages: Int, f: Array[Byte] =>
+                          toSequenceNr: Long, maxNumberOfMessages: Int, f: SerializedPayload =>
     Any): Seq[PersistentRepr] = {
     val query: StructuredQuery[Entity] =
       Query.newEntityQueryBuilder()
@@ -168,6 +171,7 @@ trait  DatastoreJournalObject extends DatastorePersistence
   val uuid = UUID.randomUUID()
   val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
   val key = keyFactory.newKey(uuid.toString)
+  lazy val datastoreSerializer = new DatastoreSerializer(actorSystem)
 
   override protected def initialize(): Unit = {
     1
@@ -175,12 +179,12 @@ trait  DatastoreJournalObject extends DatastorePersistence
 
   protected def persistentReprToDBObject(persistentRepr: PersistentRepr, tagList: List[String])
     (implicit rejectNonSerializableObjects: Boolean): Try[Entity] =
-    persistentReprToDatastoreEntity(persistentRepr, tagList, serialise)
+    persistentReprToDatastoreEntity(persistentRepr, tagList, datastoreSerializer.serialize)
 
 
   def replay(persistenceId: String, fromSequenceNr: Long,
                    toSequenceNr: Long, maxNumberOfMessages: Int): Seq[PersistentRepr] = {
-    replayExecute(persistenceId, fromSequenceNr, toSequenceNr, maxNumberOfMessages, deserialise)
+    replayExecute(persistenceId, fromSequenceNr, toSequenceNr, maxNumberOfMessages, datastoreSerializer.deserialize)
   }
 
 }

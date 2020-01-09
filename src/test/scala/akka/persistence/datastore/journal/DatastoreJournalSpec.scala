@@ -14,5 +14,5 @@ class DatastoreJournalSpec
     false // or CapabilityFlag.off
 
   override def supportsSerialization: CapabilityFlag =
-    false // or CapabilityFlag.on
+    true // or CapabilityFlag.on
 }
