@@ -1,9 +1,6 @@
 package akka.persistence.datastore
-
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
-
 import akka.persistence.datastore.connection.DatastoreConnection
-import com.google.cloud.datastore.{Datastore, DatastoreOptions}
+import com.google.cloud.datastore.{Datastore}
 import com.typesafe.config.Config
 
 object DatastoreCommon {
@@ -18,21 +15,8 @@ object DatastoreCommon {
   val writerUUID: String = "writerUUID"
   val tagsKey: String = "tagsKey"
   val timeBasedUUIDKey: String = "timeBasedUUIDKey"
-
-  def deserialise(value: Array[Byte]): Any = {
-    val ois = new ObjectInputStream(new ByteArrayInputStream(value))
-    val v = ois.readObject
-    ois.close()
-    v
-  }
-
-  def serialise(value: Any): Array[Byte] = {
-    val stream: ByteArrayOutputStream = new ByteArrayOutputStream()
-    val oos = new ObjectOutputStream(stream)
-    oos.writeObject(value)
-    oos.close()
-    stream.toByteArray
-  }
+  val manifestKey: String = "manifestKey"
+  val serializerKey: String = "serializerKey"
 
 }
 
