@@ -18,7 +18,7 @@ class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: Exten
 
   private case object Continue
   val out: Outlet[String] = Outlet(
-    "PersistenceIdsSource.out"
+    "CurrentPersistenceIdsSource.out"
   )
   override def shape: SourceShape[String] = SourceShape(out)
   private val persistenceIdKey = DatastoreCommon.persistenceIdKey

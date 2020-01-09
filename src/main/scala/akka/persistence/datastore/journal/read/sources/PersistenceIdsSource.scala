@@ -32,6 +32,9 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
       private val Limit = 1000
       private var buf = Vector.empty[String]
 
+      private var contained = List.empty[String]
+      private var lastCursor: Cursor = null
+
       override def preStart(): Unit = {
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
       }
@@ -80,18 +83,28 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
       object Select {
         def run(limit: Int): Vector[String] = {
           try {
-            val query: StructuredQuery[Entity] =
-              Query
-                .newEntityQueryBuilder()
-                .setKind(kind).setLimit(limit)
+            val query: StructuredQuery[ProjectionEntity] = {
+              val q = Query
+                .newProjectionEntityQueryBuilder()
+                .setKind(kind)
+
+              if(lastCursor != null) {
+                q.setStartCursor(lastCursor)
+              }
+                q.setLimit(limit)
                 .build()
-            val results: QueryResults[Entity] =
+            }
+
+            val results: QueryResults[ProjectionEntity] =
               DatastoreConnection.datastoreService
                 .run(query, ReadOption.eventualConsistency)
             val b = Vector.newBuilder[String]
             while (results.hasNext) {
               val next = results.next()
-              b += next.getString(persistenceIdKey)
+              if(!contained.contains(next.getString(persistenceIdKey))) {
+                contained = contained.appended(next.getString(persistenceIdKey))
+                b += next.getString(persistenceIdKey)
+              }
             }
             b.result()
           }
@@ -99,5 +112,6 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
       }
     }
   }
+
 
 

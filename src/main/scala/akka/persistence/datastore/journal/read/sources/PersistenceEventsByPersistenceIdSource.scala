@@ -27,9 +27,10 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
   private val persistenceIdKey = DatastoreCommon.persistenceIdKey
   private val payloadKey = DatastoreCommon.payloadKey
   private val kind = DatastoreCommon.journalKind
-  private val tagsKey = DatastoreCommon.tagsKey
   private val serializerKey = DatastoreCommon.serializerKey
   private val manifestKey = DatastoreCommon.manifestKey
+
+  private var currentSequenceNumber = fromSequenceNr
 
   override protected def initialAttributes: Attributes =
     Attributes(ActorAttributes.IODispatcher)
@@ -63,7 +64,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
         if (buf.isEmpty) {
           try {
             buf =
-              Select.run(persistenceId, fromSequenceNr, toSequenceNr, Limit)
+              Select.run(persistenceId, currentSequenceNumber, currentSequenceNumber + 10, Limit)
           } catch {
             case NonFatal(e) =>
               failStage(e)
@@ -97,8 +98,8 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
                 .setFilter(
                   CompositeFilter.and(
                     PropertyFilter.eq(persistenceIdKey, id),
-                    PropertyFilter.ge(sequenceNrKey, from),
-                    PropertyFilter.le(sequenceNrKey, to),
+                    PropertyFilter.gt(sequenceNrKey, from),
+                    PropertyFilter.le(sequenceNrKey, to)
                   )
                 )
                 .setOrderBy(OrderBy.asc(sequenceNrKey))
@@ -110,6 +111,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
             val b = Vector.newBuilder[EventEnvelope]
             while (results.hasNext) {
               val next = results.next()
+              currentSequenceNumber = next.getLong(sequenceNrKey)
               b += EventEnvelope(
                 NoOffset,
                 next.getString(persistenceIdKey),
