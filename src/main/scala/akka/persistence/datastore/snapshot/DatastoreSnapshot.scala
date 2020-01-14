@@ -22,8 +22,6 @@ import scala.concurrent._
     private val persistenceIdKey = DatastoreCommon.persistenceIdKey
     override val config: Config = context.system.settings.config.getConfig(configRootKey)
 
-    initialize()
-
     def deleteAsync(metadata: SnapshotMetadata): Future[Unit] = Future {
       val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
       val key = keyFactory.newKey(metadata.timestamp+metadata.sequenceNr+metadata.persistenceId)
