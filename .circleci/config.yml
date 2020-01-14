@@ -42,6 +42,10 @@ jobs:
         command:
           cd ~/example
     - run:
+        name: clear datastore
+        command:
+          curl -X POST http://localhost:8081/reset
+    - run:
         name: run example tests
         command:
           sbt test
