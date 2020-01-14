@@ -19,7 +19,7 @@ jobs:
     - run:
         name: "run datastore"
         command: |
-          gcloud components install cloud-datastore-emulator
+          sudo apt-get install google-cloud-sdk-datastore-emulator
           gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
     - run:
         name: "test with sbt"
