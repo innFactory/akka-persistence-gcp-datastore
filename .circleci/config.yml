@@ -38,16 +38,13 @@ jobs:
         command:
           git clone https://$GIT_USER:$GIT_SSHKEY@github.com/innFactory/akka-persistence-gcp-datastore-example.git ~/example
     - run:
-        name: cd into repository
-        command:
-          cd ~/example
-    - run:
         name: clear datastore
         command:
           curl -X POST http://localhost:8081/reset
     - run:
         name: run example tests
-        command:
+        command: |
+          cd ~/example
           sbt test
     - save_cache:
         paths:
