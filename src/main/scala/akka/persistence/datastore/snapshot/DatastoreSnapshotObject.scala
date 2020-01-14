@@ -2,7 +2,6 @@ package akka.persistence.datastore.snapshot
 import akka.actor.ActorLogging
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedSnapshot}
-import akka.persistence.serialization.Snapshot
 import akka.persistence.datastore.{DatastoreCommon, DatastorePersistence, DatastoreSnapshotCommon}
 import akka.persistence.{SelectedSnapshot, SnapshotMetadata}
 import com.google.cloud.datastore.{Blob, BlobValue, Entity}

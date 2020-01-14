@@ -1,6 +1,6 @@
 package akka.persistence.datastore
 import akka.persistence.datastore.connection.DatastoreConnection
-import com.google.cloud.datastore.{Datastore}
+import com.google.cloud.datastore.Datastore
 import com.typesafe.config.Config
 
 object DatastoreCommon {

@@ -23,7 +23,6 @@ trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal ⇒
     if (getMaxNumber(max) > 0) {
       val entities = replay(persistenceId, fromSequenceNr, toSequenceNr, getMaxNumber(max))
       entities.foreach(persistentRepr => {
-        // println("RECOVERY " + persistentRepr.payload.getClass.toString)
         recoveryCallback(persistentRepr)
       })
       Future.successful()

@@ -122,9 +122,7 @@ object DatastoreJournalObject {
     while(results.hasNext) {
       result = results.next +: result
     }
-
     val messagesToReplay = result.take(maxNumberOfMessages).map(dbObject => datastoreEntityToPersistentRepr(dbObject, f)).flatten
-    // println(s"REPLAY Execute ${fromSequenceNr} to ${toSequenceNr} for ${maxNumberOfMessages} resulting ${result.length} and ${messagesToReplay.length}" )
     messagesToReplay
   }
 

@@ -3,11 +3,8 @@ package akka.persistence.datastore.journal.read.sources
 import akka.actor.ExtendedActorSystem
 import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
-import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedPayload}
-import akka.persistence.query._
 import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic}
 import akka.stream.{ActorAttributes, Attributes, Outlet, SourceShape}
-import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 import com.google.cloud.datastore._
 
 import scala.concurrent.duration.FiniteDuration

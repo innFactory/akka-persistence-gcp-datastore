@@ -1,7 +1,5 @@
 package akka.persistence.datastore.connection
 import com.google.auth.oauth2.GoogleCredentials
-import com.google.cloud.TransportOptions
-import com.google.cloud.datastore.testing.LocalDatastoreHelper
 import com.google.cloud.datastore.{Datastore, DatastoreOptions}
 import com.typesafe.config.ConfigFactory
 

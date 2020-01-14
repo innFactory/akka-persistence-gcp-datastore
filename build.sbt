@@ -5,7 +5,7 @@ val circeVersion = "0.12.3"
 organization := "de.innfactory"
 
 name := "akka-persistence-gcp-datastore"
-version := "0.2.0"
+version := "0.3.0"
 
 scalaVersion := scalaVer
 scalacOptions ++= Seq(
