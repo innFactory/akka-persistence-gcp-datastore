@@ -29,6 +29,19 @@ jobs:
         name: "test with sbt"
         command: |
           sbt test
+    - run:
+        name: "publishLocal"
+        command: |
+          sbt publishLocal
+    - run:
+        name: Clone example repository
+        command:
+          git clone $GIT_USER:$GIT_SSHKEY@github.com:innFactory/akka-persistence-gcp-datastore-example.git ~/example
+    - run:
+        name: run example tests
+        command:
+          cd ~/example
+          sbt test
     - save_cache:
         paths:
         - "~/.iv2/cache"
