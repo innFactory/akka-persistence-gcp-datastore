@@ -14,12 +14,7 @@ trait DatastoreSnapshotObject extends DatastorePersistence
     private val kind = DatastoreCommon.snapshotKind
     private val loadAttemptsKey: String = "load-attempts"
     private lazy val datastoreSerializer = new DatastoreSerializer(actorSystem)
-
     protected lazy val loadAttempts: Int = config.getInt(loadAttemptsKey)
-
-    override protected def initialize(): Unit = {
-      1
-    }
 
     protected def snapshotToDbObject(metadata: SnapshotMetadata, snapshot: Any): Entity = {
       val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)

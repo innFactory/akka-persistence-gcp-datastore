@@ -46,6 +46,7 @@ jobs:
         command: |
           GCP_PLUGIN_VERSION="$(sbt version | tail -1)"
           GCP_PLUGIN_VERSION="${GCP_PLUGIN_VERSION#* }"
+          echo GCP_PLUGIN_VERSION
           export GCP_VERSION=${GCP_PLUGIN_VERSION}
           cd ~/example
           sbt test
