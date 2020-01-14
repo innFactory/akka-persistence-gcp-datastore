@@ -17,12 +17,7 @@ jobs:
         - v1-dependencies-{{ checksum "build.sbt" }}
         - v1-dependencies-
     - run:
-        name: "configure environment"
-        command: |
-          chmod +x ./.circleci/configure_env.sh
-          ./.circleci/configure_env.sh
-    - run:
-        name: "run datstore"
+        name: "run datastore"
         command: |
           gcloud components install cloud-datastore-emulator
           gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
