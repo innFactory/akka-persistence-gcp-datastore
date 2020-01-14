@@ -21,7 +21,10 @@ jobs:
         command: |
           sudo apt-get install google-cloud-sdk-datastore-emulator
           gcloud config set project $GCLOUD_PROJECT_ID
-          gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+    - run:
+        name: background datastore for tests
+        command: gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+        background: true
     - run:
         name: "test with sbt"
         command: |
