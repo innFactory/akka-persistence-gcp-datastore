@@ -36,7 +36,7 @@ jobs:
     - run:
         name: Clone example repository
         command:
-          git clone $GIT_USER:$GIT_SSHKEY@github.com:innFactory/akka-persistence-gcp-datastore-example.git ~/example
+          git clone https://$GIT_USER:$GIT_SSHKEY@github.com/innFactory/akka-persistence-gcp-datastore-example.git ~/example
     - run:
         name: run example tests
         command:
