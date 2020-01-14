@@ -2,9 +2,7 @@ package akka.persistence.datastore.journal
 
 import akka.actor.{ActorLogging, ActorSystem}
 import akka.persistence._
-import akka.persistence.datastore.serialization.{DatastoreSerializer}
 import akka.persistence.journal.{AsyncWriteJournal, Tagged}
-import akka.persistence.serialization.MessageFormats
 import com.google.cloud.datastore.Entity
 import com.typesafe.config.Config
 
@@ -20,15 +18,10 @@ private[journal] class DatastoreJournal extends AsyncWriteJournal
   import DatastoreJournalObject._
 
   override val actorSystem: ActorSystem = context.system
-
   override val config: Config = context.system.settings.config.getConfig(configRootKey)
-
   implicit val rejectNonSerializableObjects: Boolean = rejectNonSerializableObjectId
 
-  initialize()
-
   def asyncWriteMessages(messages: immutable.Seq[AtomicWrite]): Future[immutable.Seq[Try[Unit]]] = {
-
     val messagesToTryAndPersist: immutable.Seq[Try[Entity]] = messages.flatMap(message => message.payload.map(a => persistentReprToDatastoreEntity(a, persistentReprGetTags(a), datastoreSerializer.serialize)))
     val persistedMessages: Future[List[Entity]] = Future(persistExecute(messagesToTryAndPersist.flatMap(_.toOption).toList))
     val promise = Promise[immutable.Seq[Try[Unit]]]()

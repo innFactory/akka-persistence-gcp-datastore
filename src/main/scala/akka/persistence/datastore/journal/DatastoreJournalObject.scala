@@ -1,22 +1,16 @@
 package akka.persistence.datastore.journal
 
-import java.io.NotSerializableException
 import java.util.UUID
-
 import akka.actor.ActorLogging
 import akka.persistence.PersistentRepr
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.datastore._
 import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedPayload}
 import akka.persistence.journal.Tagged
-import akka.persistence.query.TimeBasedUUID
 import com.fasterxml.uuid.Generators
-import com.google.api.client.util.DateTime
-import com.google.cloud.datastore.ReadOption.EventualConsistency
 import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 import com.google.cloud.datastore._
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext}
 import scala.util.{Success, Try}
 
 object DatastoreJournalObject {
@@ -166,14 +160,10 @@ trait  DatastoreJournalObject extends DatastorePersistence
 
   private val replayDispatcherKey: String = "replay-dispatcher"
   protected lazy val replayDispatcherId: String = config.getString(replayDispatcherKey)
-  val uuid = UUID.randomUUID()
-  val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-  val key = keyFactory.newKey(uuid.toString)
+  val uuid: UUID = UUID.randomUUID()
+  val keyFactory: KeyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
+  val key: Key = keyFactory.newKey(uuid.toString)
   lazy val datastoreSerializer = new DatastoreSerializer(actorSystem)
-
-  override protected def initialize(): Unit = {
-    1
-  }
 
   protected def persistentReprToDBObject(persistentRepr: PersistentRepr, tagList: List[String])
     (implicit rejectNonSerializableObjects: Boolean): Try[Entity] =

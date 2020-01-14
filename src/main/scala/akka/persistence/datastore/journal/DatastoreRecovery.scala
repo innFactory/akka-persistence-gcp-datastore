@@ -2,7 +2,6 @@ package akka.persistence.datastore.journal
 
 import akka.persistence._
 import akka.persistence.journal.AsyncRecovery
-
 import scala.concurrent._
 
 trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal ⇒
