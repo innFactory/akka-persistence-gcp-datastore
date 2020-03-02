@@ -24,6 +24,15 @@
           - name: persistenceId
           - name: timestamp
     
+      - kind: journal
+        properties:
+        - name: tagsKey
+        - name: timestamp
+    
+      - kind: journal
+        properties:
+        - name: persistenceId
+        - name: sequenceNr
     ```
     index.yml
 
@@ -48,8 +57,10 @@ To test this plugin
 
 1. ``` gcloud components install cloud-datastore-emulator ```
 
-2. ``` gcloud beta emulators datastore start --no-store-on-disk ```
+2. ``` gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 ```
 
 3. Set Env Variable ```DATASTORE_TESTHOST=http://<host>:<port>``` of datastore emulator
 
 4. Execute ````sbt run````
+
+5. Before executing test reset datastore data: ```curl -X POST http://<host>:<port>/reset```

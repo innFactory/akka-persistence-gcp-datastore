@@ -1,7 +1,6 @@
 package akka.persistence.datastore
-
 import akka.persistence.datastore.connection.DatastoreConnection
-import com.google.cloud.datastore.{Datastore, DatastoreOptions}
+import com.google.cloud.datastore.Datastore
 import com.typesafe.config.Config
 
 object DatastoreCommon {
@@ -14,6 +13,11 @@ object DatastoreCommon {
   val markerKey: String = "marker"
   val payloadKey: String = "payload"
   val writerUUID: String = "writerUUID"
+  val tagsKey: String = "tagsKey"
+  val timeBasedUUIDKey: String = "timeBasedUUIDKey"
+  val manifestKey: String = "manifestKey"
+  val serializerKey: String = "serializerKey"
+
 }
 
 trait DatastoreCommon {

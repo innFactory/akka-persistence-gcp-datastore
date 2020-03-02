@@ -1,0 +1,63 @@
+# Scala CircleCI 2.0 configuration file
+#
+version: 2.0
+jobs:
+  test:
+    docker:
+    - image: innfactory/gcloud-scala-ci:1.1.0
+    - image: google/cloud-sdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "build.sbt" }}
+        - v1-dependencies-
+    - run:
+        name: "run datastore"
+        command: |
+          sudo apt-get install google-cloud-sdk-datastore-emulator
+          gcloud config set project $GCLOUD_PROJECT_ID
+    - run:
+        name: background datastore for tests
+        command: gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+        background: true
+    - run:
+        name: "test with sbt"
+        command: |
+          sbt test
+    - run:
+        name: "publishLocal"
+        command: |
+          sbt publishLocal
+    - run:
+        name: Clone example repository
+        command:
+          git clone https://$GIT_USER:$GIT_SSHKEY@github.com/innFactory/akka-persistence-gcp-datastore-example.git ~/example
+    - run:
+        name: clear datastore
+        command:
+          curl -X POST http://localhost:8081/reset
+    - run:
+        name: run example tests
+        command: |
+          GCP_PLUGIN_VERSION="$(sbt version | tail -1)"
+          GCP_PLUGIN_VERSION="${GCP_PLUGIN_VERSION#*}"
+          echo "${GCP_PLUGIN_VERSION#*}"
+          export GCP_VERSION=${GCP_PLUGIN_VERSION}
+          cd ~/example
+          sbt test
+    - save_cache:
+        paths:
+        - "~/.iv2/cache"
+        - "~/.sbt"
+        - "~/.m2"
+        key: v1-dependencies-{{ checksum "build.sbt" }}
+workflows:
+  version: 2
+  akka-persistence-gcp-datastore-pipeline:
+    jobs:
+    - test
