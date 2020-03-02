@@ -21,7 +21,4 @@ libraryDependencies ++= Dependencies.list
 
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 
-lazy val root = (project in file(".")).
-  settings(
-
-  )
+lazy val root = (project in file(".")).settings()
