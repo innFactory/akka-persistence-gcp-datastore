@@ -24,6 +24,15 @@
           - name: persistenceId
           - name: timestamp
     
+      - kind: journal
+        properties:
+        - name: tagsKey
+        - name: timestamp
+    
+      - kind: journal
+        properties:
+        - name: persistenceId
+        - name: sequenceNr
     ```
     index.yml
 

@@ -30,10 +30,10 @@ class DatastoreSerializer(actorSystem: ActorSystem)  {
   }
 
   private def serializeVersionOne(data: Any): SerializedPayload = {
-    val snapshotData = data.asInstanceOf[AnyRef]
-    val serializer = serialization.findSerializerFor(snapshotData)
-    val manifest = Serializers.manifestFor(serializer, snapshotData)
-    SerializedPayload(serialization.serialize(snapshotData).get, serializer.identifier, manifest)
+    val dataToSerialize = data.asInstanceOf[AnyRef]
+    val serializer = serialization.findSerializerFor(dataToSerialize)
+    val manifest = Serializers.manifestFor(serializer, dataToSerialize)
+    SerializedPayload(serialization.serialize(dataToSerialize).get, serializer.identifier, manifest)
   }
 
 }

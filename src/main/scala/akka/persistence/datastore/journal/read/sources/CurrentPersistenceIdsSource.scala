@@ -84,7 +84,7 @@ class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: Exten
                 .build()
             val results: QueryResults[Entity] =
               DatastoreConnection.datastoreService
-                .run(query, ReadOption.eventualConsistency)
+                .run(query, ReadOption.eventualConsistency())
             val b = Vector.newBuilder[String]
             while (results.hasNext) {
               val next = results.next()
