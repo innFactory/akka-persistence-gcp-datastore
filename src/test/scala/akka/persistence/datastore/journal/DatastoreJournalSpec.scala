@@ -21,8 +21,9 @@ import akka.persistence.journal.JournalSpec
 import com.typesafe.config.ConfigFactory
 
 class DatastoreJournalSpec
-  extends JournalSpec(
-    config = ConfigFactory.parseString("""akka.persistence.journal.plugin = "gcp-datastore-journal"""")) {
+    extends JournalSpec(
+      config = ConfigFactory.parseString("""akka.persistence.journal.plugin = "gcp-datastore-journal"""")
+    ) {
 
   val actorSystem: ActorSystem = ActorSystem("test", config)
 
