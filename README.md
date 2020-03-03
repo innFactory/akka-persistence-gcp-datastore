@@ -1,4 +1,5 @@
 # GCP Datastore Akka Persistence Plugin
+[![CircleCI](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master.svg?style=svg&circle-token=700c4e7e6802d0dacbe552c87f25454e20f6ce28)](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master)
 
 ## Setup
 

@@ -44,7 +44,7 @@ jobs:
     - run:
         name: run example tests
         command: |
-          GCP_PLUGIN_VERSION="$(sbt version | tail -1 | egrep -o '[0-9].[0-9].[0-9]')"
+          export GCP_PLUGIN_VERSION="$(sbt version | tail -1 | egrep -o '[0-9].[0-9].[0-9]')"
           echo "Current Plugin Version is: ${GCP_PLUGIN_VERSION}"
           cd ~/example
           sbt -DGCP_PLUGIN_VERSION=${GCP_PLUGIN_VERSION} test
