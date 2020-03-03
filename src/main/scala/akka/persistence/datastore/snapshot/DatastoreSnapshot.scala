@@ -40,7 +40,7 @@ import scala.concurrent._
 
     def deleteAsync(metadata: SnapshotMetadata): Future[Unit] = Future {
       val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-      val key = keyFactory.newKey(metadata.timestamp+metadata.sequenceNr+metadata.persistenceId)
+      val key = keyFactory.newKey(s"${metadata.timestamp+metadata.sequenceNr}${metadata.persistenceId}")
       DatastoreConnection.datastoreService.delete(key)
       val query: StructuredQuery[Entity] =
         Query.newEntityQueryBuilder()
@@ -56,8 +56,7 @@ import scala.concurrent._
       while(results.hasNext) {
         result = results.next.getKey +: result
       }
-      val res = DatastoreConnection.datastoreService.delete(result: _*)
-      Future(res)
+      DatastoreConnection.datastoreService.delete(result: _*)
     }
 
 
@@ -112,7 +111,7 @@ import scala.concurrent._
               result = result :+ next
             }
           }
-        var messagesToReplay = result.take(loadAttempts).map(dbObject => dbObjectToSelectedSnapshot(dbObject)).flatten
+        val messagesToReplay = result.take(loadAttempts).flatMap(dbObject => dbObjectToSelectedSnapshot(dbObject))
         Future(messagesToReplay.headOption)
       } catch{
         case e:Exception => {
@@ -124,6 +123,7 @@ import scala.concurrent._
 
     override def saveAsync(metadata: SnapshotMetadata, snapshot: Any): Future[Unit] = Future {
         DatastoreConnection.datastoreService.put(snapshotToDbObject(metadata, snapshot))
+      ()
     }
 
     override def postStop(): Unit = {

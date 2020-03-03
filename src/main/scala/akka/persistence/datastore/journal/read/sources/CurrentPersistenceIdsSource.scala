@@ -61,7 +61,7 @@ class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: Exten
         }
       })
 
-      override def onDownstreamFinish(): Unit = {
+      override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
@@ -92,7 +92,6 @@ class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: Exten
 
       object Select {
         def run(limit: Int): Vector[String] = {
-          try {
             val query: StructuredQuery[Entity] =
               Query
                 .newEntityQueryBuilder()
@@ -107,7 +106,6 @@ class CurrentPersistenceIdsSource(refreshInterval: FiniteDuration, system: Exten
               b += next.getString(persistenceIdKey)
             }
             b.result()
-          }
         }
       }
     }

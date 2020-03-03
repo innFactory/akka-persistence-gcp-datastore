@@ -68,7 +68,7 @@ object DatastoreJournalObject {
         .set(tagsKey, tagListToValueList)
         .set(timeBasedUUIDKey, timeBasedUUID.toString)
         .set(timestampKey, timeBasedUUID.timestamp())
-        .set(serializerKey, value.serializerId)
+        .set(serializerKey, value.serializerId.toLong)
         .set(manifestKey, value.manifest)
         .build
     }
@@ -84,7 +84,7 @@ object DatastoreJournalObject {
      Any): Option[PersistentRepr] = {
     if (persistenceEntity.getString(markerKey) == "D") return None
     val payload = persistenceEntity.getBlob(payloadKey)
-    var persistenceRepr = PersistentRepr.apply(
+    val persistenceRepr = PersistentRepr.apply(
       payload = f(SerializedPayload(payload.toByteArray, persistenceEntity.getLong(serializerKey).toInt, persistenceEntity.getString(manifestKey))),
       persistenceId = persistenceEntity.getString(persistenceIdKey),
       sequenceNr = persistenceEntity.getLong(sequenceNrKey),

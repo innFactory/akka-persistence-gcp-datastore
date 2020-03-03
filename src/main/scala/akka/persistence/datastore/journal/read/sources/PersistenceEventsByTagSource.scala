@@ -15,6 +15,7 @@
  */
 
 package akka.persistence.datastore.journal.read.sources
+
 import akka.actor.ExtendedActorSystem
 import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
@@ -34,15 +35,17 @@ class PersistenceEventsByTagSource(tag: String, timestamp: Long, refreshInterval
   private val datastoreSerializer = new DatastoreSerializer(system)
 
   private case object Continue
+
   val out: Outlet[EventEnvelope] = Outlet("PersistenceEventsByTagSource.out")
+
   override def shape: SourceShape[EventEnvelope] = SourceShape(out)
+
   private val sequenceNrKey = DatastoreCommon.sequenceNrKey
   private val persistenceIdKey = DatastoreCommon.persistenceIdKey
   private val payloadKey = DatastoreCommon.payloadKey
   private val kind = DatastoreCommon.journalKind
   private val tagsKey = DatastoreCommon.tagsKey
   private val timestampKey = DatastoreCommon.timestampKey
-  private val timeBasedUUIDKey = DatastoreCommon.timeBasedUUIDKey
   private val serializerKey = DatastoreCommon.serializerKey
   private val manifestKey = DatastoreCommon.manifestKey
 
@@ -70,14 +73,14 @@ class PersistenceEventsByTagSource(tag: String, timestamp: Long, refreshInterval
         }
       })
 
-      override def onDownstreamFinish(): Unit = {
+      override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
       private def query(): Unit = {
         if (buf.isEmpty) {
           try {
-            buf = Select.run(tag, currentTimestamp , Limit)
+            buf = Select.run(tag, currentTimestamp, Limit)
           } catch {
             case NonFatal(e) =>
               failStage(e)
@@ -100,32 +103,33 @@ class PersistenceEventsByTagSource(tag: String, timestamp: Long, refreshInterval
 
       object Select {
         def run(tag: String, from: Long, limit: Int): Vector[EventEnvelope] = {
-          try {
-            val query: StructuredQuery[Entity] =
-              Query.newEntityQueryBuilder()
-                .setKind(kind)
-                .setFilter(CompositeFilter.and(
-                  PropertyFilter.eq(tagsKey, tag),
-                  PropertyFilter.gt(timestampKey, from),
-                ))
-                .setOrderBy(OrderBy.asc(timestampKey))
-                .setLimit(limit)
-                .build()
-            val results: QueryResults[Entity]  = DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency)
-            val b = Vector.newBuilder[EventEnvelope]
-            while (results.hasNext) {
-              val next = results.next()
-              currentTimestamp =  next.getLong(timestampKey)
-              b += EventEnvelope(
-                Offset.sequence(currentTimestamp),
-                next.getString(persistenceIdKey),
-                next.getLong(sequenceNrKey),
-                datastoreSerializer.deserialize(SerializedPayload(next.getBlob(payloadKey).toByteArray, next.getLong(serializerKey).toInt, next.getString(manifestKey))))
-            }
-            b.result()
+          val query: StructuredQuery[Entity] =
+            Query.newEntityQueryBuilder()
+              .setKind(kind)
+              .setFilter(CompositeFilter.and(
+                PropertyFilter.eq(tagsKey, tag),
+                PropertyFilter.gt(timestampKey, from),
+              ))
+              .setOrderBy(OrderBy.asc(timestampKey))
+              .setLimit(limit)
+              .build()
+          val results: QueryResults[Entity] = DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency)
+          val b = Vector.newBuilder[EventEnvelope]
+          while (results.hasNext) {
+            val next = results.next()
+            currentTimestamp = next.getLong(timestampKey)
+            b += EventEnvelope(
+              Offset.sequence(currentTimestamp),
+              next.getString(persistenceIdKey),
+              next.getLong(sequenceNrKey),
+              datastoreSerializer.deserialize(SerializedPayload(next.getBlob(payloadKey).toByteArray, next.getLong(serializerKey).toInt, next.getString(manifestKey))),
+              currentTimestamp
+            )
           }
+          b.result()
         }
       }
+
     }
 
 }

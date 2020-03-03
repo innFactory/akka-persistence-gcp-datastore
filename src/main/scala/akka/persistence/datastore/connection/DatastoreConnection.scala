@@ -21,10 +21,6 @@ import com.typesafe.config.ConfigFactory
 
 object DatastoreConnection {
 
-  // Scopes for Google Credentials
-  private val scopeList = java.util.Arrays.asList(
-    "https://www.googleapis.com/auth/cloud-platform")
-
   private val config = ConfigFactory.load()
   private val projectId = config.getString("datastore.projectid")
   private val localDatastoreHost = config.getString("datastore.testhost")

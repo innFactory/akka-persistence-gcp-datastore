@@ -72,7 +72,7 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
         }
       })
 
-      override def onDownstreamFinish(): Unit = {
+      override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
@@ -106,7 +106,6 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
                 from: Long,
                 to: Long,
                 limit: Int): Vector[EventEnvelope] = {
-          try {
             val query: StructuredQuery[Entity] =
               Query
                 .newEntityQueryBuilder()
@@ -138,11 +137,11 @@ class PersistenceEventsByPersistenceIdSource(persistenceId: String, fromSequence
                     next.getLong(serializerKey).toInt,
                     next.getString(manifestKey)
                   )
-                )
+                ),
+                currentSequenceNumber
               )
             }
             b.result()
-          }
         }
       }
     }

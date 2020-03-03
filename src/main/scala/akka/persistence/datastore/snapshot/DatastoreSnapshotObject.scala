@@ -34,7 +34,7 @@ trait DatastoreSnapshotObject extends DatastorePersistence
 
     protected def snapshotToDbObject(metadata: SnapshotMetadata, snapshot: Any): Entity = {
       val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-      val key = keyFactory.newKey(metadata.timestamp+metadata.sequenceNr+metadata.persistenceId)
+      val key = keyFactory.newKey(s"${metadata.timestamp+metadata.sequenceNr}${metadata.persistenceId}")
       val serializedSnapshot = datastoreSerializer.serializeSnapshot(snapshot)
       val dataString: Blob = Blob.copyFrom(serializedSnapshot.data)
       Entity
@@ -43,7 +43,7 @@ trait DatastoreSnapshotObject extends DatastorePersistence
         .set(persistenceIdKey, metadata.persistenceId)
         .set(sequenceNrKey, metadata.sequenceNr)
         .set(timestampKey, metadata.timestamp)
-        .set(serializerKey, serializedSnapshot.serializerId)
+        .set(serializerKey, serializedSnapshot.serializerId.toLong)
         .set(manifestKey, serializedSnapshot.manifest)
         .build
     }

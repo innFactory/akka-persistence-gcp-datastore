@@ -18,9 +18,10 @@ package akka.persistence.datastore.journal
 
 import akka.persistence._
 import akka.persistence.journal.AsyncRecovery
+
 import scala.concurrent._
 
-trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal ⇒
+trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal =>
 
   import  DatastoreJournalObject._
 
@@ -31,15 +32,13 @@ trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal ⇒
   }
 
   def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long, max: Long)
-                         (recoveryCallback: PersistentRepr ⇒ Unit): Future[Unit] =  {
+                         (recoveryCallback: PersistentRepr => Unit): Future[Unit] =  Future {
     if (getMaxNumber(max) > 0) {
       val entities = replay(persistenceId, fromSequenceNr, toSequenceNr, getMaxNumber(max))
       entities.foreach(persistentRepr => {
         recoveryCallback(persistentRepr)
       })
     }
-    Future.successful()
-
   }
 
   def getMaxNumber(max: Long): Int = {

@@ -46,7 +46,7 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
       private var buf = Vector.empty[String]
 
       private var contained = List.empty[String]
-      private var lastCursor: Cursor = null
+      private val lastCursor: Cursor = null
 
       override def preStart(): Unit = {
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
@@ -64,7 +64,8 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
         }
       })
 
-      override def onDownstreamFinish(): Unit = {
+
+      override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
@@ -95,7 +96,6 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
 
       object Select {
         def run(limit: Int): Vector[String] = {
-          try {
             val query: StructuredQuery[ProjectionEntity] = {
               val q = Query
                 .newProjectionEntityQueryBuilder()
@@ -121,7 +121,6 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
             }
             b.result()
           }
-        }
       }
     }
   }
