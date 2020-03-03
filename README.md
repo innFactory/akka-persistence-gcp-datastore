@@ -1,6 +1,6 @@
 # GCP Datastore Akka Persistence Plugin
 
-### Setup
+## Setup
 
 1. Google Cloud Project with Datastore or FireStore in Datastore mode enabled  
 2. Create a index.yml file with content bolow in the project that will use this plugin:
@@ -49,7 +49,7 @@
     src/main/resources/datastore.json
     ```
     
-### Testing
+## Testing
 
 To test this plugin 
 
@@ -64,3 +64,13 @@ To test this plugin
 4. Execute ````sbt run````
 
 5. Before executing test reset datastore data: ```curl -X POST http://<host>:<port>/reset```
+
+## Contribution policy
+Contributions via GitHub pull requests are gladly accepted from their original author. Along with any pull requests, please state that the contribution is your original work and that you license the work to the project under the project's open source license. Whether or not you state this explicitly, by submitting any copyrighted material via pull request, email, or other means you agree to license the material under the project's open source license and warrant that you have the legal authority to do so.
+
+## License
+This code is open source software licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+## Credits
+innFactory GmbH
+
