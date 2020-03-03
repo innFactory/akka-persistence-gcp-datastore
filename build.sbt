@@ -16,7 +16,6 @@ val playJson             = "com.typesafe.play"  %% "play-json"              % pl
 val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore"  % googleDatastoreVersion
 
 name := "akka-persistence-gcp-datastore"
-version := "1.0.0"
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias(
@@ -35,7 +34,23 @@ inThisBuild(
     parallelExecution in Test := false,
     logBuffered in Test := false,
     testOptions += Tests.Setup(_ => sys.props("testing") = "true"),
-    organizationName := "innFactory GmbH | innfactory.de"
+    organizationName := "innFactory GmbH | innfactory.de",
+    bintrayOrganization := Some("innfactory"),
+    bintrayRepository := "maven",
+    bintrayPackageLabels := Seq(
+      "JWT",
+      "Scala",
+      "akka-persistence",
+      "akka-typed",
+      "gcp",
+      "datastore",
+      "firestore",
+      "event sourcing",
+      "cqrs"
+    ),
+    bintrayVcsUrl := Some("https://github.com/innFactory/akka-persistence-gcp-datastore"),
+    homepage := Some(url("https://github.com/innFactory/akka-persistence-gcp-datastore")),
+    publishMavenStyle := true
   )
 )
 
@@ -91,3 +106,28 @@ lazy val root = project
     )
   )
   .enablePlugins(AutomateHeaderPlugin)
+
+// Pom Extra for Maven publishing
+pomExtra :=
+  <scm>
+    <url>git@github.com:innFactory/akka-persistence-gcp-datastore.git</url>
+    <connection>scm:git:git@github.com:innFactory/akka-persistence-gcp-datastore.git</connection>
+  </scm>
+    <developers>
+      <developer>
+        <id>jona7o</id>
+        <name>Tobias Jonas</name>
+        <email>info@innFactory.de</email>
+        <url>https://innFactory.de/</url>
+        <organization>innFactory</organization>
+        <organizationUrl>https://innFactory.de/</organizationUrl>
+      </developer>
+      <developer>
+        <id>pasta_32</id>
+        <name>Patrick Stadler</name>
+        <email>info@innFactory.de</email>
+        <url>https://innFactory.de/</url>
+        <organization>innFactory</organization>
+        <organizationUrl>https://innFactory.de/</organizationUrl>
+      </developer>
+    </developers>

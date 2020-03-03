@@ -75,12 +75,13 @@ jobs:
       TERM: dumb
     steps:
     - checkout
+    - run: git fetch --tags
     - restore_cache:
         key: sbtcache
     - run:
         name: "publish with sbt"
         command: |
-          sbt publishLocal
+          sbt publish
     - save_cache:
         paths:
         - "~/.iv2/cache"
@@ -108,12 +109,11 @@ workflows:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
       - release:
-          context: Sonatype
           requires:
             - test212_jdk8
             - test213_jdk11
           filters:
-            #branches:
-            #  ignore: /.*/
+            branches:
+              ignore: /.*/
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
