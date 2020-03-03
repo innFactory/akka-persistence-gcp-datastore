@@ -1,3 +1,4 @@
+
 val akkaVersion = "2.6.3"
 
 val akkaPersistence      = "com.typesafe.akka"  %% "akka-persistence"       % akkaVersion
