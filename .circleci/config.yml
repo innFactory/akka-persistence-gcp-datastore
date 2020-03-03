@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   test:
     docker:
-    - image: innfactory/cloud-scala-ci:11.0.6
+    - image: innfactory/gcloud-scala-ci:11.0.6
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx4096m
@@ -15,11 +15,6 @@ jobs:
         keys:
         - v1-dependencies-{{ checksum "build.sbt" }}
         - v1-dependencies-
-    - run:
-        name: "run datastore"
-        command: |
-          sudo apt-get install google-cloud-sdk-datastore-emulator
-          gcloud config set project $GCLOUD_PROJECT_ID
     - run:
         name: background datastore for tests
         command: gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
