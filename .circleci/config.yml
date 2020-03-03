@@ -13,7 +13,7 @@ jobs:
     steps:
     - checkout
     - restore_cache:
-        keys:sbt
+        keys:
         - v1-dependencies-{{ checksum "build.sbt" }}
         - v1-dependencies-
     - run:
