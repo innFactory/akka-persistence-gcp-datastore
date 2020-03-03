@@ -4,7 +4,7 @@ version: 2.0
 jobs:
   test:
     docker:
-    - image: innfactory/gcloud-scala-ci:1.1.0
+    - image: circleci/openjdk:8-jdk
     - image: google/cloud-sdk
     working_directory: ~/repo
     environment:
