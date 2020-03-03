@@ -113,8 +113,7 @@ workflows:
             - test212_jdk8
             - test213_jdk11
           filters:
-            branches:
-              - master
-              #ignore: /.*/
+            #branches:
+            #  ignore: /.*/
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
