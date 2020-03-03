@@ -16,11 +16,9 @@
 
 package akka.persistence.datastore
 
-import akka.actor.{ActorLogging, ActorSystem}
+import akka.actor.{ ActorLogging, ActorSystem }
 
-trait DatastorePersistence extends DatastoreCommon { mixin : ActorLogging =>
+trait DatastorePersistence extends DatastoreCommon { mixin: ActorLogging =>
   val actorSystem: ActorSystem
 
 }
-
-
