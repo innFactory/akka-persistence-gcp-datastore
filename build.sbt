@@ -1,19 +1,19 @@
 import sbt.Keys.parallelExecution
 
 val mainScala = "2.13.1"
-val allScala = Seq("2.12.10", mainScala)
+val allScala  = Seq("2.12.10", mainScala)
 
-val akkaVersion = "2.6.3"
+val akkaVersion              = "2.6.3"
 val javaUUIDGeneratorVersion = "4.0.1"
-val playJsonVersion = "2.8.1"
-val googleDatastoreVersion = "1.102.0"
+val playJsonVersion          = "2.8.1"
+val googleDatastoreVersion   = "1.102.0"
 
-val akkaPersistence = "com.typesafe.akka" %% "akka-persistence" % akkaVersion
-val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
-val akkaTCK = "com.typesafe.akka" %% "akka-persistence-tck" % akkaVersion
-val javaUUIDGenerator = "com.fasterxml.uuid" % "java-uuid-generator" % javaUUIDGeneratorVersion
-val playJson = "com.typesafe.play" %% "play-json" % playJsonVersion
-val googleDatastore = "com.google.cloud" % "google-cloud-datastore" % googleDatastoreVersion
+val akkaPersistence      = "com.typesafe.akka"  %% "akka-persistence"       % akkaVersion
+val akkaPersistenceQuery = "com.typesafe.akka"  %% "akka-persistence-query" % akkaVersion
+val akkaTCK              = "com.typesafe.akka"  %% "akka-persistence-tck"   % akkaVersion
+val javaUUIDGenerator    = "com.fasterxml.uuid" % "java-uuid-generator"     % javaUUIDGeneratorVersion
+val playJson             = "com.typesafe.play"  %% "play-json"              % playJsonVersion
+val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore"  % googleDatastoreVersion
 
 name := "akka-persistence-gcp-datastore"
 version := "1.0.0"
@@ -80,18 +80,14 @@ lazy val root = project
   .in(file("."))
   .settings(commonSettings)
   .settings(
-
     startYear := Some(2020),
     libraryDependencies ++= Seq(
-      akkaPersistence % "compile",
+      akkaPersistence   % "compile",
       javaUUIDGenerator % "compile",
-      googleDatastore % "compile",
-      playJson % "compile",
+      googleDatastore   % "compile",
+      playJson          % "compile",
       akkaPersistenceQuery,
       akkaTCK
     )
   )
   .enablePlugins(AutomateHeaderPlugin)
-
-
-
