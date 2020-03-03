@@ -2,7 +2,21 @@
 #
 version: 2.1
 jobs:
-  test:
+  lint:
+    docker:
+      - image: circleci/openjdk:8-jdk-node
+    steps:
+      - checkout
+      - restore_cache:
+          key: sbtcache
+      - run: sbt ++2.13.1! check
+      - save_cache:
+          key: sbtcache
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+  test213_jdk11:
     docker:
     - image: innfactory/gcloud-scala-ci:11.0.6
     working_directory: ~/repo
@@ -12,9 +26,7 @@ jobs:
     steps:
     - checkout
     - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.sbt" }}
-        - v1-dependencies-
+        key: sbtcache
     - run:
         name: background datastore for tests
         command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
@@ -23,33 +35,85 @@ jobs:
         name: "test with sbt"
         command: |
           sbt test
-    - run:
-        name: "publishLocal"
-        command: |
-          sbt publishLocal
-    - run:
-        name: Clone example repository
-        command:
-          git clone https://$GIT_USER:$GIT_SSHKEY@github.com/innFactory/akka-persistence-gcp-datastore-example.git ~/example
-    - run:
-        name: clear datastore
-        command:
-          curl -X POST http://localhost:8081/reset
-    - run:
-        name: run example tests
-        command: |
-          export GCP_PLUGIN_VERSION="$(sbt version | tail -1 | egrep -o '[0-9].[0-9].[0-9]')"
-          echo "Current Plugin Version is: ${GCP_PLUGIN_VERSION}"
-          cd ~/example
-          sbt -DGCP_PLUGIN_VERSION=${GCP_PLUGIN_VERSION} test
     - save_cache:
         paths:
         - "~/.iv2/cache"
         - "~/.sbt"
         - "~/.m2"
-        key: v1-dependencies-{{ checksum "build.sbt" }}
+        key: sbtcache
+  test212_jdk8:
+    docker:
+    - image: innfactory/gcloud-scala-ci:8
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx4096m
+      TERM: dumb
+    steps:
+    - checkout
+    - restore_cache:
+        key: sbtcache
+    - run:
+        name: background datastore for tests
+        command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+        background: true
+    - run:
+        name: "test with sbt"
+        command: |
+          sbt test
+    - save_cache:
+        paths:
+        - "~/.iv2/cache"
+        - "~/.sbt"
+        - "~/.m2"
+        key: sbtcache
+  release:
+    docker:
+    - image: innfactory/gcloud-scala-ci:8
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx4096m
+      TERM: dumb
+    steps:
+    - checkout
+    - restore_cache:
+        key: sbtcache
+    - run:
+        name: "publish with sbt"
+        command: |
+          sbt publishLocal
+    - save_cache:
+        paths:
+        - "~/.iv2/cache"
+        - "~/.sbt"
+        - "~/.m2"
+        key: sbtcache
 workflows:
   version: 2
-  akka-persistence-gcp-datastore-pipeline:
+  build:
     jobs:
-    - test
+      - lint:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - test212_jdk8:
+          requires:
+            - lint
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - test213_jdk11:
+          requires:
+            - lint
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - release:
+          context: Sonatype
+          requires:
+            - test212_jdk8
+            - test213_jdk11
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
