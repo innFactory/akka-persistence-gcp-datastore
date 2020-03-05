@@ -110,7 +110,7 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
           while (results.hasNext) {
             val next = results.next()
             if (!contained.contains(next.getString(persistenceIdKey))) {
-              contained = contained.appended(next.getString(persistenceIdKey))
+              contained = contained :+ next.getString(persistenceIdKey)
               b += next.getString(persistenceIdKey)
             }
           }

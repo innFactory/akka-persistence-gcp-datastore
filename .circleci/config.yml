@@ -81,7 +81,7 @@ jobs:
     - run:
         name: "publish with sbt"
         command: |
-          sbt publish
+          sbt +publish
     - save_cache:
         paths:
         - "~/.iv2/cache"
