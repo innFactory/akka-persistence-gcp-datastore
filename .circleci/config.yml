@@ -34,7 +34,8 @@ jobs:
     - run:
         name: "test with sbt"
         command: |
-          sbt ++2.13.1! test
+          sbt ++2.13.1! ;clean;coverage;test;coverageReport
+          bash <(curl -s https://codecov.io/bash)
     - save_cache:
         paths:
         - "~/.iv2/cache"
