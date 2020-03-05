@@ -23,36 +23,10 @@ addCommandAlias(
   "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck"
 )
 
-inThisBuild(
-  List(
-    organization := "de.innfactory",
-    homepage := Some(url("https://github.com/ghostdogpr/caliban")),
-    licenses := List(
-      "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
-    ),
-    parallelExecution in ThisBuild := false,
-    parallelExecution in Test := false,
-    logBuffered in Test := false,
-    testOptions += Tests.Setup(_ => sys.props("testing") = "true"),
-    organizationName := "innFactory GmbH | innfactory.de",
-    bintrayOrganization := Some("innfactory"),
-    bintrayRepository := "maven",
-    bintrayPackageLabels := Seq(
-      "JWT",
-      "Scala",
-      "akka-persistence",
-      "akka-typed",
-      "gcp",
-      "datastore",
-      "firestore",
-      "event sourcing",
-      "cqrs"
-    ),
-    bintrayVcsUrl := Some("https://github.com/innFactory/akka-persistence-gcp-datastore"),
-    homepage := Some(url("https://github.com/innFactory/akka-persistence-gcp-datastore")),
-    publishMavenStyle := true
-  )
-)
+parallelExecution in ThisBuild := false
+parallelExecution in Test := false
+logBuffered in Test := false
+testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 
 val commonSettings = Def.settings(
   scalaVersion := mainScala,
@@ -107,7 +81,30 @@ lazy val root = project
   )
   .enablePlugins(AutomateHeaderPlugin)
 
-// Pom Extra for Maven publishing
+// Publishing
+organization := "de.innfactory"
+homepage := Some(url("https://github.com/ghostdogpr/caliban"))
+licenses := List(
+  "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
+)
+
+organizationName := "innFactory GmbH | innfactory.de"
+bintrayOrganization := Some("innfactory")
+bintrayRepository := "sbt-plugins"
+bintrayPackageLabels := Seq(
+  "JWT",
+  "Scala",
+  "akka-persistence",
+  "akka-typed",
+  "gcp",
+  "datastore",
+  "firestore",
+  "event sourcing",
+  "cqrs"
+)
+bintrayVcsUrl := Some("https://github.com/innFactory/akka-persistence-gcp-datastore")
+homepage := Some(url("https://github.com/innFactory/akka-persistence-gcp-datastore"))
+publishMavenStyle := true
 pomExtra :=
   <scm>
     <url>git@github.com:innFactory/akka-persistence-gcp-datastore.git</url>
