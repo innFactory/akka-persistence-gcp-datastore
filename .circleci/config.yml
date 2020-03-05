@@ -34,7 +34,7 @@ jobs:
     - run:
         name: "test with sbt"
         command: |
-          sbt test
+          sbt ++2.13.1! test
     - save_cache:
         paths:
         - "~/.iv2/cache"
@@ -59,7 +59,7 @@ jobs:
     - run:
         name: "test with sbt"
         command: |
-          sbt test
+          sbt ++2.12.10! test
     - save_cache:
         paths:
         - "~/.iv2/cache"

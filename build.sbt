@@ -43,6 +43,7 @@ logBuffered in Test := false
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 scalaVersion := mainScala
 crossScalaVersions := allScala
+scalafmtOnCompile := true
 startYear := Some(2020)
 scalacOptions ++= Seq(
   "-deprecation",
