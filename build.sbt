@@ -17,7 +17,6 @@ val javaUUIDGenerator    = "com.fasterxml.uuid" % "java-uuid-generator"     % ja
 val playJson             = "com.typesafe.play"  %% "play-json"              % playJsonVersion
 val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore"  % googleDatastoreVersion
 
-
 lazy val root = project
   .in(file("."))
   .settings(
@@ -31,7 +30,6 @@ lazy val root = project
     )
   )
   .enablePlugins(AutomateHeaderPlugin)
-
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias(
@@ -78,7 +76,6 @@ scalacOptions ++= Seq(
     )
   case _ => Nil
 })
-
 
 // Publishing
 organization := "de.innfactory"
