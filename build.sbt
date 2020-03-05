@@ -43,7 +43,6 @@ logBuffered in Test := false
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 scalaVersion := mainScala
 crossScalaVersions := allScala
-scalafmtOnCompile := true
 startYear := Some(2020)
 scalacOptions ++= Seq(
   "-deprecation",
@@ -80,7 +79,7 @@ scalacOptions ++= Seq(
 
 // Publishing
 organization := "de.innfactory"
-homepage := Some(url("https://github.com/ghostdogpr/caliban"))
+homepage := Some(url("https://github.com/innFactory/akka-persistence-gcp-datastore"))
 licenses := List(
   "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
 )

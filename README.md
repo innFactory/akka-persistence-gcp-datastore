@@ -2,7 +2,6 @@
 
 [![CircleCI](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master.svg?style=svg&circle-token=700c4e7e6802d0dacbe552c87f25454e20f6ce28)](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master)
 [ ![Download](https://api.bintray.com/packages/innfactory/sbt-plugins/akka-persistence-gcp-datastore/images/download.svg) ](https://bintray.com/innfactory/sbt-plugins/akka-persistence-gcp-datastore/_latestVersion)
-[![codecov](https://codecov.io/gh/innFactory/akka-persistence-gcp-datastore/branch/master/graph/badge.svg)](https://codecov.io/gh/innFactory/akka-persistence-gcp-datastore)
 
 ## Setup
 
