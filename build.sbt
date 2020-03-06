@@ -8,7 +8,7 @@ val allScala  = Seq("2.12.10", mainScala)
 val akkaVersion              = "2.6.3"
 val javaUUIDGeneratorVersion = "4.0.1"
 val playJsonVersion          = "2.8.1"
-val googleDatastoreVersion   = "1.102.0"
+val googleDatastoreVersion   = "1.102.3"
 
 val akkaPersistence      = "com.typesafe.akka"  %% "akka-persistence"       % akkaVersion
 val akkaPersistenceQuery = "com.typesafe.akka"  %% "akka-persistence-query" % akkaVersion
