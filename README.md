@@ -4,6 +4,7 @@
 [ ![Download](https://api.bintray.com/packages/innfactory/sbt-plugins/akka-persistence-gcp-datastore/images/download.svg) ](https://bintray.com/innfactory/sbt-plugins/akka-persistence-gcp-datastore/_latestVersion)
 [![shields.io](http://img.shields.io/badge/license-Apache2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e906cfd4a16f46d3b049c404b9d5fa55)](https://www.codacy.com/gh/innFactory/akka-persistence-gcp-datastore?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=innFactory/akka-persistence-gcp-datastore&amp;utm_campaign=Badge_Grade)
+[![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 
 akka-persistence-gcp-datastore is a journal and snapshot store plugin for [akka-persistence](http://doc.akka.io/docs/akka/current/scala/persistence.html) using [Google Cloud Datastore](https://cloud.google.com/datastore).
 It uses the official Google Java Dependency to talk with the datastore. 
