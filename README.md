@@ -18,6 +18,7 @@ The plugin supports the following functionality:
 
 ## Related Blogposts
 
+- [Using Google Datastore with akka-persistence](https://medium.com/@innFactory/using-google-datastore-with-akka-persistence-1f6f7179b22a)
 - [Was ist Event Sourcing? (de)](https://innfactory.de/softwareentwicklung/scala-akka-play-co/was-ist-event-sourcing-und-wie-funktioniert-es/)
 - [Wie lässt sich das Lesen beim Event Sourcing durch CQRS optimieren? (de)](https://innfactory.de/softwareentwicklung/wie-laesst-sich-das-lesen-beim-event-sourcing-durch-cqrs-optimieren/)
 
