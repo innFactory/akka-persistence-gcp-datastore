@@ -16,6 +16,12 @@ The plugin supports the following functionality:
 * [peristence-query](http://doc.akka.io/docs/akka/current/scala/persistence-query.html) api
 * custom serialization 
 
+## Related Blogposts
+
+- [Was ist Event Sourcing? (de)](https://innfactory.de/softwareentwicklung/scala-akka-play-co/was-ist-event-sourcing-und-wie-funktioniert-es/)
+- [Wie lässt sich das Lesen beim Event Sourcing durch CQRS optimieren? (de)](https://innfactory.de/softwareentwicklung/wie-laesst-sich-das-lesen-beim-event-sourcing-durch-cqrs-optimieren/)
+
+
 ## Usage & Setup 
 
 Versions: The table below lists the versions and their main dependencies
