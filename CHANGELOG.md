@@ -10,7 +10,7 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 
 ### Changed
 - Update sbt-scalafmt to 2.3.2 
-- Update google-cloud-datastore to 1.102.3
+- Update google-cloud-datastore to 1.102.4
 
 ## [1.0.1] - 2020-03-05
 ### Added
