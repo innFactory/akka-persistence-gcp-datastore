@@ -39,7 +39,7 @@ class PersistenceEventsByPersistenceIdSource(
   private val datastoreSerializer = new DatastoreSerializer(system)
 
   private case object Continue
-  val out: Outlet[EventEnvelope] = Outlet(
+  val out: Outlet[EventEnvelope]                 = Outlet(
     "PersistenceIdsSource.out"
   )
   override def shape: SourceShape[EventEnvelope] = SourceShape(out)
@@ -68,26 +68,27 @@ class PersistenceEventsByPersistenceIdSource(
         tryPush()
       }
 
-      setHandler(out, new OutHandler {
-        override def onPull(): Unit = {
-          query()
-          tryPush()
+      setHandler(
+        out,
+        new OutHandler {
+          override def onPull(): Unit = {
+            query()
+            tryPush()
+          }
         }
-      })
+      )
 
       override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
       private def query(): Unit =
-        if (buf.isEmpty) {
-          try {
-            buf = Select.run(persistenceId, currentSequenceNumber, currentSequenceNumber + 10, Limit)
-          } catch {
+        if (buf.isEmpty)
+          try buf = Select.run(persistenceId, currentSequenceNumber, currentSequenceNumber + 10, Limit)
+          catch {
             case NonFatal(e) =>
               failStage(e)
           }
-        }
 
       private def tryPush(): Unit =
         if (buf.nonEmpty && isAvailable(out)) {
@@ -95,11 +96,12 @@ class PersistenceEventsByPersistenceIdSource(
           buf = buf.tail
         }
 
-      override protected def onTimer(timerKey: Any): Unit = timerKey match {
-        case Continue =>
-          query()
-          tryPush()
-      }
+      override protected def onTimer(timerKey: Any): Unit =
+        timerKey match {
+          case Continue =>
+            query()
+            tryPush()
+        }
 
       object Select {
         def run(id: String, from: Long, to: Long, limit: Int): Vector[EventEnvelope] = {
@@ -117,10 +119,10 @@ class PersistenceEventsByPersistenceIdSource(
               .setOrderBy(OrderBy.asc(sequenceNrKey))
               .setLimit(limit)
               .build()
-          val results: QueryResults[Entity] =
+          val results: QueryResults[Entity]  =
             DatastoreConnection.datastoreService
               .run(query, ReadOption.eventualConsistency)
-          val b = Vector.newBuilder[EventEnvelope]
+          val b                              = Vector.newBuilder[EventEnvelope]
           while (results.hasNext) {
             val next = results.next()
             currentSequenceNumber = next.getLong(sequenceNrKey)

@@ -47,7 +47,7 @@ trait DatastoreSnapshotObject extends DatastorePersistence with DatastoreSnapsho
   }
 
   def dbObjectToSelectedSnapshot(entity: Entity): Option[SelectedSnapshot] = {
-    val data = entity.getBlob(payloadKey)
+    val data     = entity.getBlob(payloadKey)
     val snapshot = SelectedSnapshot(
       SnapshotMetadata(
         entity.getString(persistenceIdKey),

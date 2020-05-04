@@ -69,26 +69,27 @@ class PersistenceEventsByTagSource(
         tryPush()
       }
 
-      setHandler(out, new OutHandler {
-        override def onPull(): Unit = {
-          query()
-          tryPush()
+      setHandler(
+        out,
+        new OutHandler {
+          override def onPull(): Unit = {
+            query()
+            tryPush()
+          }
         }
-      })
+      )
 
       override def onDownstreamFinish(cause: Throwable): Unit = {
         // close connection if responsible for doing so
       }
 
       private def query(): Unit =
-        if (buf.isEmpty) {
-          try {
-            buf = Select.run(tag, currentTimestamp, Limit)
-          } catch {
+        if (buf.isEmpty)
+          try buf = Select.run(tag, currentTimestamp, Limit)
+          catch {
             case NonFatal(e) =>
               failStage(e)
           }
-        }
 
       private def tryPush(): Unit =
         if (buf.nonEmpty && isAvailable(out)) {
@@ -96,11 +97,12 @@ class PersistenceEventsByTagSource(
           buf = buf.tail
         }
 
-      override protected def onTimer(timerKey: Any): Unit = timerKey match {
-        case Continue =>
-          query()
-          tryPush()
-      }
+      override protected def onTimer(timerKey: Any): Unit =
+        timerKey match {
+          case Continue =>
+            query()
+            tryPush()
+        }
 
       object Select {
         def run(tag: String, from: Long, limit: Int): Vector[EventEnvelope] = {
@@ -117,9 +119,9 @@ class PersistenceEventsByTagSource(
               .setOrderBy(OrderBy.asc(timestampKey))
               .setLimit(limit)
               .build()
-          val results: QueryResults[Entity] =
+          val results: QueryResults[Entity]  =
             DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency)
-          val b = Vector.newBuilder[EventEnvelope]
+          val b                              = Vector.newBuilder[EventEnvelope]
           while (results.hasNext) {
             val next = results.next()
             currentTimestamp = next.getLong(timestampKey)

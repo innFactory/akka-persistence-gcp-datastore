@@ -36,31 +36,31 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
   private val persistenceIdKey          = DatastoreCommon.persistenceIdKey
   override val config: Config           = context.system.settings.config.getConfig(configRootKey)
 
-  def deleteAsync(metadata: SnapshotMetadata): Future[Unit] = Future {
-    val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-    val key        = keyFactory.newKey(s"${metadata.timestamp + metadata.sequenceNr}${metadata.persistenceId}")
-    DatastoreConnection.datastoreService.delete(key)
-    val query: StructuredQuery[Entity] =
-      Query
-        .newEntityQueryBuilder()
-        .setKind(kind)
-        .setFilter(
-          CompositeFilter.and(
-            PropertyFilter.eq(persistenceIdKey, metadata.persistenceId),
-            PropertyFilter.eq(sequenceNrKey, metadata.sequenceNr)
+  def deleteAsync(metadata: SnapshotMetadata): Future[Unit] =
+    Future {
+      val keyFactory                     = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
+      val key                            = keyFactory.newKey(s"${metadata.timestamp + metadata.sequenceNr}${metadata.persistenceId}")
+      DatastoreConnection.datastoreService.delete(key)
+      val query: StructuredQuery[Entity] =
+        Query
+          .newEntityQueryBuilder()
+          .setKind(kind)
+          .setFilter(
+            CompositeFilter.and(
+              PropertyFilter.eq(persistenceIdKey, metadata.persistenceId),
+              PropertyFilter.eq(sequenceNrKey, metadata.sequenceNr)
+            )
           )
-        )
-        .build()
-    val results: QueryResults[Entity] =
-      DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
-    var result: Seq[Key] = Seq.empty[Key]
-    while (results.hasNext) {
-      result = results.next.getKey +: result
+          .build()
+      val results: QueryResults[Entity]  =
+        DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
+      var result: Seq[Key]               = Seq.empty[Key]
+      while (results.hasNext)
+        result = results.next.getKey +: result
+      DatastoreConnection.datastoreService.delete(result: _*)
     }
-    DatastoreConnection.datastoreService.delete(result: _*)
-  }
 
-  override def deleteAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit] = {
+  override def deleteAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit]                   = {
     val query: StructuredQuery[Entity] =
       Query
         .newEntityQueryBuilder()
@@ -73,17 +73,18 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
           )
         )
         .build()
-    val results: QueryResults[Entity] =
+    val results: QueryResults[Entity]  =
       DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
-    var result: Seq[Key] = Seq.empty[Key]
+    var result: Seq[Key]               = Seq.empty[Key]
     while (results.hasNext) {
       val next = results.next()
-      if (next.getLong(sequenceNrKey) <= criteria.maxSequenceNr && next
-            .getLong(sequenceNrKey) >= criteria.minSequenceNr) {
+      if (
+        next.getLong(sequenceNrKey) <= criteria.maxSequenceNr && next
+          .getLong(sequenceNrKey) >= criteria.minSequenceNr
+      )
         result = next.getKey +: result
-      }
     }
-    val res = DatastoreConnection.datastoreService.delete(result: _*)
+    val res                            = DatastoreConnection.datastoreService.delete(result: _*)
     Future(res)
   }
 
@@ -106,29 +107,30 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
           )
           .setOrderBy(OrderBy.desc(timestampKey))
           .build()
-      val results: QueryResults[Entity] =
+      val results: QueryResults[Entity]  =
         DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
 
       var result: Seq[Entity] = Seq.empty[Entity]
       while (results.hasNext) {
         val next = results.next()
-        if (next.getLong(sequenceNrKey) <= criteria.maxSequenceNr && next.getLong(sequenceNrKey) >= criteria.minSequenceNr) {
+        if (
+          next.getLong(sequenceNrKey) <= criteria.maxSequenceNr && next.getLong(sequenceNrKey) >= criteria.minSequenceNr
+        )
           result = result :+ next
-        }
       }
-      val messagesToReplay = result.take(loadAttempts).flatMap(dbObject => dbObjectToSelectedSnapshot(dbObject))
+      val messagesToReplay    = result.take(loadAttempts).flatMap(dbObject => dbObjectToSelectedSnapshot(dbObject))
       Future(messagesToReplay.headOption)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         println("LOAD SNAPSHOT FAILED " + e.toString)
         Future.failed(e)
-      }
     }
 
-  override def saveAsync(metadata: SnapshotMetadata, snapshot: Any): Future[Unit] = Future {
-    DatastoreConnection.datastoreService.put(snapshotToDbObject(metadata, snapshot))
-    ()
-  }
+  override def saveAsync(metadata: SnapshotMetadata, snapshot: Any): Future[Unit] =
+    Future {
+      DatastoreConnection.datastoreService.put(snapshotToDbObject(metadata, snapshot))
+      ()
+    }
 
   override def postStop(): Unit = {}
 }

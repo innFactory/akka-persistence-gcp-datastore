@@ -36,7 +36,7 @@ object DatastoreCommon {
 
 }
 
-trait DatastoreCommon {
+trait DatastoreCommon  {
   protected val databaseMsg: String   = "database"
   protected val collectionMsg: String = "collection"
 

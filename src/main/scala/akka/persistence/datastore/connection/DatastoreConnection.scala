@@ -27,20 +27,19 @@ object DatastoreConnection {
   private val datastore: Datastore = getDatastoreService
 
   private def getDatastoreService: Datastore =
-    if (sys.props.get("testing").getOrElse("false") == "true") {
+    if (sys.props.get("testing").getOrElse("false") == "true")
       // CreateDatastore for test
       DatastoreOptions.newBuilder
         .setHost(localDatastoreHost)
         .setTransportOptions(DatastoreOptions.getDefaultHttpTransportOptions)
         .build
         .getService
-    } else {
+    else
       // CreateDatastore for prod
       initProductionDatastore
-    }
 
   private def initProductionDatastore: Datastore = {
-    val serviceAccountDatastore =
+    val serviceAccountDatastore   =
       getClass()
         .getClassLoader()
         .getResourceAsStream("datastore.json")
@@ -52,6 +51,6 @@ object DatastoreConnection {
   }
 
   // Google Datastore Service
-  def datastoreService = datastore
+  def datastoreService                           = datastore
 
 }

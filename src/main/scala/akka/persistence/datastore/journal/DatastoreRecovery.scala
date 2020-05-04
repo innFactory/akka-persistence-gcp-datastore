@@ -32,18 +32,18 @@ trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal =>
 
   def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long, max: Long)(
     recoveryCallback: PersistentRepr => Unit
-  ): Future[Unit] = Future {
-    if (getMaxNumber(max) > 0) {
-      val entities = replay(persistenceId, fromSequenceNr, toSequenceNr, getMaxNumber(max))
-      entities.foreach(persistentRepr => recoveryCallback(persistentRepr))
+  ): Future[Unit] =
+    Future {
+      if (getMaxNumber(max) > 0) {
+        val entities = replay(persistenceId, fromSequenceNr, toSequenceNr, getMaxNumber(max))
+        entities.foreach(persistentRepr => recoveryCallback(persistentRepr))
+      }
     }
-  }
 
   def getMaxNumber(max: Long): Int =
-    if (max <= Int.MaxValue) {
+    if (max <= Int.MaxValue)
       max.toInt
-    } else {
+    else
       Int.MaxValue
-    }
 
 }

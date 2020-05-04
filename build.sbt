@@ -10,12 +10,12 @@ val javaUUIDGeneratorVersion = "4.0.1"
 val playJsonVersion          = "2.8.1"
 val googleDatastoreVersion   = "1.102.3"
 
-val akkaPersistence      = "com.typesafe.akka"  %% "akka-persistence"       % akkaVersion
-val akkaPersistenceQuery = "com.typesafe.akka"  %% "akka-persistence-query" % akkaVersion
-val akkaTCK              = "com.typesafe.akka"  %% "akka-persistence-tck"   % akkaVersion
-val javaUUIDGenerator    = "com.fasterxml.uuid" % "java-uuid-generator"     % javaUUIDGeneratorVersion
-val playJson             = "com.typesafe.play"  %% "play-json"              % playJsonVersion
-val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore"  % googleDatastoreVersion
+val akkaPersistence      = "com.typesafe.akka" %% "akka-persistence"       % akkaVersion
+val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
+val akkaTCK              = "com.typesafe.akka" %% "akka-persistence-tck"   % akkaVersion
+val javaUUIDGenerator    = "com.fasterxml.uuid" % "java-uuid-generator"    % javaUUIDGeneratorVersion
+val playJson             = "com.typesafe.play" %% "play-json"              % playJsonVersion
+val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore" % googleDatastoreVersion
 
 lazy val root = project
   .in(file("."))
@@ -74,7 +74,7 @@ scalacOptions ++= Seq(
       "-opt-warnings",
       "-opt:l:inline"
     )
-  case _ => Nil
+  case _             => Nil
 })
 
 // Publishing

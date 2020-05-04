@@ -39,7 +39,7 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config)
     with akka.persistence.query.scaladsl.PersistenceIdsQuery
     with akka.persistence.query.scaladsl.CurrentPersistenceIdsQuery {
 
-  private val refreshInterval: FiniteDuration =
+  private val refreshInterval: FiniteDuration                                           =
     config.getDuration("refresh-interval", MILLISECONDS).millis
 
   /*
@@ -53,15 +53,16 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config)
    * in the returned stream. This means that you can use the offset that is returned in `EventEnvelope`
    * as the `offset` parameter in a subsequent query.
    */
-  override def eventsByTag(tag: String, offset: Offset): Source[EventEnvelope, NotUsed] = offset match {
-    case Sequence(o) =>
-      Source.fromGraph(new PersistenceEventsByTagSource(tag, o, refreshInterval, system))
-    case NoOffset => eventsByTag(tag, Sequence(0L)) //recursive
-    case TimeBasedUUID(value) =>
-      Source.fromGraph(new PersistenceEventsByTagSource(tag, value.timestamp(), refreshInterval, system))
-    case _ =>
-      throw new IllegalArgumentException("Datastore Journal does not support " + offset.getClass.getName + " offsets")
-  }
+  override def eventsByTag(tag: String, offset: Offset): Source[EventEnvelope, NotUsed] =
+    offset match {
+      case Sequence(o)          =>
+        Source.fromGraph(new PersistenceEventsByTagSource(tag, o, refreshInterval, system))
+      case NoOffset             => eventsByTag(tag, Sequence(0L)) //recursive
+      case TimeBasedUUID(value) =>
+        Source.fromGraph(new PersistenceEventsByTagSource(tag, value.timestamp(), refreshInterval, system))
+      case _                    =>
+        throw new IllegalArgumentException("Datastore Journal does not support " + offset.getClass.getName + " offsets")
+    }
 
   override def eventsByPersistenceId(
     persistenceId: String,
