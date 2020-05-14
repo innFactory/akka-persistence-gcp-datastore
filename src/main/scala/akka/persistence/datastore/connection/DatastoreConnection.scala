@@ -51,6 +51,6 @@ object DatastoreConnection {
   }
 
   // Google Datastore Service
-  def datastoreService                           = datastore
+  def datastoreService = datastore
 
 }

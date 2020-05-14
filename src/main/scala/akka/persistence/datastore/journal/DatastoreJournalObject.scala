@@ -48,12 +48,12 @@ object DatastoreJournalObject {
     tagList: List[String],
     f: Any => SerializedPayload
   )(implicit rejectNonSerializableObjects: Boolean): Try[Entity] = {
-    val uuid                               = UUID.randomUUID()
-    val timeBasedUUID                      = Generators.timeBasedGenerator().generate()
-    val keyFactory                         = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-    val key                                = keyFactory.newKey(uuid.toString)
-    def marker(): String                   = if (persistentRepr.deleted) "D" else ""
-    def tagListToValueList: ListValue      = {
+    val uuid             = UUID.randomUUID()
+    val timeBasedUUID    = Generators.timeBasedGenerator().generate()
+    val keyFactory       = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
+    val key              = keyFactory.newKey(uuid.toString)
+    def marker(): String = if (persistentRepr.deleted) "D" else ""
+    def tagListToValueList: ListValue = {
       val lv: ListValue.Builder = ListValue.newBuilder()
       tagList.foreach(t => lv.addValue(t))
       lv.build()
@@ -74,7 +74,7 @@ object DatastoreJournalObject {
         .set(manifestKey, value.manifest)
         .build
     }
-    val payload                            = persistentRepr.payload match {
+    val payload          = persistentRepr.payload match {
       case tagged: Tagged => tagged.payload
       case a              => a
     }

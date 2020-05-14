@@ -60,7 +60,7 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
       DatastoreConnection.datastoreService.delete(result: _*)
     }
 
-  override def deleteAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit]                   = {
+  override def deleteAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit] = {
     val query: StructuredQuery[Entity] =
       Query
         .newEntityQueryBuilder()
