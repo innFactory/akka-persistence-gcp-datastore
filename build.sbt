@@ -5,7 +5,7 @@ name := "akka-persistence-gcp-datastore"
 val mainScala = "2.13.1"
 val allScala  = Seq("2.12.10", mainScala)
 
-val akkaVersion              = "2.6.5"
+val akkaVersion              = "2.6.6"
 val javaUUIDGeneratorVersion = "4.0.1"
 val playJsonVersion          = "2.9.0"
 val googleDatastoreVersion   = "1.102.3"
