@@ -24,6 +24,7 @@ jobs:
                   sbt ++2.13.1! check
     test213_jdk11:
         runs-on: ubuntu-latest
+        #needs: lint
         steps:
             - uses: actions/checkout@v2
             - name: Cache SBT ivy cache
@@ -44,12 +45,16 @@ jobs:
               uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
               with:
                   project_id: build
+            - name: Install gcloud beta
+              run: |
+                  sudo apt-get install google-cloud-sdk-datastore-emulator
             - name: Test with Scala 2.13.1
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 --quiet &
                   sbt ++2.13.1! test
     test212_jdk8:
         runs-on: ubuntu-latest
+        #needs: lint
         steps:
             - uses: actions/checkout@v2
             - name: Cache SBT ivy cache
@@ -70,6 +75,9 @@ jobs:
               uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
               with:
                   project_id: build
+            - name: Install gcloud beta
+              run: |
+                  sudo apt-get install google-cloud-sdk-datastore-emulator
             - name: Test with Scala 2.12.10
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 --quiet &
