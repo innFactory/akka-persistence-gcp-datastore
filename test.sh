@@ -5,7 +5,5 @@ echo "Starting database..."
 gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
 sleep 5
 curl -X POST http://localhost:8081/reset
-cd ..
 sbt test
-cd .circleci
 trap 'kill $(jobs -pr)' SIGINT SIGTERM EXIT
