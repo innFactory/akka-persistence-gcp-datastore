@@ -43,7 +43,6 @@ jobs:
             - name: Setup up Gcloud
               uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
               with:
-                  version: "290.0.1"
                   project_id: build
             - name: Test with Scala 2.13.1
               run: |
@@ -70,7 +69,6 @@ jobs:
             - name: Setup up Gcloud
               uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
               with:
-                  version: "290.0.1"
                   project_id: build
             - name: Test with Scala 2.12.10
               run: |
