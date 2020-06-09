@@ -43,7 +43,7 @@ jobs:
             - name: Setup up Gcloud
               uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
               with:
-                  version: '290.0.1'
+                  version: "290.0.1"
                   project_id: build
             - name: Test with Scala 2.13.1
               run: |
@@ -68,10 +68,10 @@ jobs:
               with:
                   java-version: 8
             - name: Setup up Gcloud
-                uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-                with:
-                    version: '290.0.1'
-                    project_id: build
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                  version: "290.0.1"
+                  project_id: build
             - name: Test with Scala 2.12.10
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
