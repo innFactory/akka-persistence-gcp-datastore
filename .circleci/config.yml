@@ -18,81 +18,81 @@ jobs:
             - "~/.m2"
   test213_jdk11:
     docker:
-    - image: innfactory/gcloud-scala-ci:11.0.6
+      - image: innfactory/gcloud-scala-ci:11.0.6
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx4096m
       TERM: dumb
     steps:
-    - checkout
-    - restore_cache:
-        key: sbtcache
-    - run:
-        name: background datastore for tests
-        command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
-        background: true
-    - run:
-        name: "test with sbt"
-        command: |
-          sbt ++2.13.1! test
-    - save_cache:
-        paths:
-        - "~/.iv2/cache"
-        - "~/.sbt"
-        - "~/.m2"
-        key: sbtcache
+      - checkout
+      - restore_cache:
+          key: sbtcache
+      - run:
+          name: background datastore for tests
+          command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+          background: true
+      - run:
+          name: "test with sbt"
+          command: |
+            sbt ++2.13.1! test
+      - save_cache:
+          paths:
+            - "~/.iv2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+          key: sbtcache
   test212_jdk8:
     docker:
-    - image: innfactory/gcloud-scala-ci:8
+      - image: innfactory/gcloud-scala-ci:8
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx4096m
       TERM: dumb
     steps:
-    - checkout
-    - restore_cache:
-        key: sbtcache
-    - run:
-        name: background datastore for tests
-        command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
-        background: true
-    - run:
-        name: "test with sbt"
-        command: |
-          sbt ++2.12.10! test
-    - save_cache:
-        paths:
-        - "~/.iv2/cache"
-        - "~/.sbt"
-        - "~/.m2"
-        key: sbtcache
+      - checkout
+      - restore_cache:
+          key: sbtcache
+      - run:
+          name: background datastore for tests
+          command: gcloud config set project build && gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0
+          background: true
+      - run:
+          name: "test with sbt"
+          command: |
+            sbt ++2.12.10! test
+      - save_cache:
+          paths:
+            - "~/.iv2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+          key: sbtcache
   release:
     docker:
-    - image: innfactory/gcloud-scala-ci:8
+      - image: innfactory/gcloud-scala-ci:8
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx4096m
       TERM: dumb
     steps:
-    - checkout
-    - run: git fetch --tags
-    - restore_cache:
-        key: sbtcache
-    - run:
-        name: "publish with sbt"
-        command: |
-          sbt +publish
-    - save_cache:
-        paths:
-        - "~/.iv2/cache"
-        - "~/.sbt"
-        - "~/.m2"
-        key: sbtcache
+      - checkout
+      - run: git fetch --tags
+      - restore_cache:
+          key: sbtcache
+      - run:
+          name: "publish with sbt"
+          command: |
+            sbt +publish
+      - save_cache:
+          paths:
+            - "~/.iv2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+          key: sbtcache
 workflows:
   version: 2
   build:
     jobs:
-      - lint
+      #- lint
       - test212_jdk8:
           requires:
             - lint
