@@ -1,6 +1,6 @@
 # GCP Datastore Akka Persistence Plugin
 
-[![CircleCI](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master.svg?style=svg&circle-token=700c4e7e6802d0dacbe552c87f25454e20f6ce28)](https://circleci.com/gh/innFactory/akka-persistence-gcp-datastore/tree/master)
+![Test](https://github.com/innFactory/akka-persistence-gcp-datastore/workflows/Test/badge.svg?branch=master)
 [ ![Download](https://api.bintray.com/packages/innfactory/sbt-plugins/akka-persistence-gcp-datastore/images/download.svg) ](https://bintray.com/innfactory/sbt-plugins/akka-persistence-gcp-datastore/_latestVersion)
 [![shields.io](http://img.shields.io/badge/license-Apache2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e906cfd4a16f46d3b049c404b9d5fa55)](https://www.codacy.com/gh/innFactory/akka-persistence-gcp-datastore?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=innFactory/akka-persistence-gcp-datastore&amp;utm_campaign=Badge_Grade)
@@ -29,7 +29,7 @@ Versions: The table below lists the versions and their main dependencies
 
 | Version to use 	| Scala 2.12 	| Scala 2.13 	| Scala 3 / Dotty 	| Akka  	| play-json 	| google-cloud-datastore 	|
 |----------------	|------------	|------------	|-----------------	|-------	|-----------	|------------------------	|
-| 1.0.1          	| ✓          	| ✓          	| ?               	| 2.6.x 	| 2.8.x     	| 1.102.x                	|
+| 1.0.2          	| ✓          	| ✓          	| ?               	| 2.6.x 	| 2.8.x     	| 1.102.x                	|
 
 
 
