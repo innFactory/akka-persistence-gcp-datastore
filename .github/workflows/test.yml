@@ -24,7 +24,7 @@ jobs:
                   sbt ++2.13.1! check
     test213_jdk11:
         runs-on: ubuntu-latest
-        #needs: lint
+        needs: lint
         steps:
             - uses: actions/checkout@v2
             - name: Cache SBT ivy cache
@@ -51,12 +51,13 @@ jobs:
             - name: Test with Scala 2.13.1
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
+                  sleep 10
                   sbt ++2.13.1! test
               env:
                   CLOUDSDK_CORE_DISABLE_PROMPTS: 1
     test212_jdk8:
         runs-on: ubuntu-latest
-        #needs: lint
+        needs: lint
         steps:
             - uses: actions/checkout@v2
             - name: Cache SBT ivy cache
@@ -83,6 +84,7 @@ jobs:
             - name: Test with Scala 2.12.10
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
+                  sleep 10
                   sbt ++2.12.10! test
               env:
                   CLOUDSDK_CORE_DISABLE_PROMPTS: 1
