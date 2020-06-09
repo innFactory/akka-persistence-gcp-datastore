@@ -47,7 +47,7 @@ jobs:
                   project_id: build
             - name: Test with Scala 2.13.1
               run: |
-                  gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
+                  gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 --quiet &
                   sbt ++2.13.1! test
     test212_jdk8:
         runs-on: ubuntu-latest
@@ -74,5 +74,5 @@ jobs:
                   project_id: build
             - name: Test with Scala 2.12.10
               run: |
-                  gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
+                  gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 --quiet &
                   sbt ++2.12.10! test
