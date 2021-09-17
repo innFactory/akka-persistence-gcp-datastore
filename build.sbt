@@ -3,7 +3,7 @@ import sbt.Keys.parallelExecution
 name := "akka-persistence-gcp-datastore"
 
 val mainScala = "2.13.2"
-val allScala  = Seq("2.12.11", mainScala)
+val allScala  = Seq("2.12.15", mainScala)
 
 val akkaVersion              = "2.6.14"
 val javaUUIDGeneratorVersion = "4.0.1"
