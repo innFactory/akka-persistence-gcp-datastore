@@ -48,7 +48,7 @@ jobs:
             - name: Install gcloud beta
               run: |
                   sudo apt-get install google-cloud-sdk-datastore-emulator
-            - name: Test with Scala 2.13.2
+            - name: Test with Scala 2.13.7
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
                   sleep 10
