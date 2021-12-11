@@ -42,7 +42,7 @@ jobs:
               with:
                   java-version: 11.0.7
             - name: Setup up Gcloud
-              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              uses: google-github-actions/setup-gcloud@master
               with:
                   project_id: build
             - name: Install gcloud beta
@@ -75,7 +75,7 @@ jobs:
               with:
                   java-version: 8
             - name: Setup up Gcloud
-              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              uses: google-github-actions/setup-gcloud@master
               with:
                   project_id: build
             - name: Install gcloud beta
