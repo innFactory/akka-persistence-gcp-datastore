@@ -42,12 +42,12 @@ jobs:
               with:
                   java-version: 11.0.7
             - name: Setup up Gcloud
-              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              uses: google-github-actions/setup-gcloud@master
               with:
                   project_id: build
             - name: Install gcloud beta
               run: |
-                  sudo apt-get install google-cloud-sdk-datastore-emulator
+                  gcloud components install cloud-datastore-emulator
             - name: Test with Scala 2.13.2
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
@@ -75,12 +75,12 @@ jobs:
               with:
                   java-version: 8
             - name: Setup up Gcloud
-              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              uses: google-github-actions/setup-gcloud@master
               with:
                   project_id: build
             - name: Install gcloud beta
               run: |
-                  sudo apt-get install google-cloud-sdk-datastore-emulator
+                  gcloud components install cloud-datastore-emulator
             - name: Test with Scala 2.12.11
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
