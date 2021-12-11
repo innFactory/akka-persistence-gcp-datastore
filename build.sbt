@@ -37,9 +37,9 @@ addCommandAlias(
   "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck"
 )
 
-parallelExecution in ThisBuild := false
-parallelExecution in Test := false
-logBuffered in Test := false
+(ThisBuild / parallelExecution) := false
+(Test / parallelExecution) := false
+(Test / logBuffered) := false
 testOptions += Tests.Setup(_ => sys.props("testing") = "true")
 scalaVersion := mainScala
 crossScalaVersions := allScala
