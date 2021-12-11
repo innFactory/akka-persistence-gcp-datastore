@@ -2,13 +2,14 @@ import sbt.Keys.parallelExecution
 
 name := "akka-persistence-gcp-datastore"
 
-val mainScala = "2.13.2"
-val allScala  = Seq("2.12.11", mainScala)
 
-val akkaVersion              = "2.6.14"
+val mainScala = "2.13.7"
+val allScala  = Seq("2.12.15", mainScala)
+
+val akkaVersion              = "2.6.17"
 val javaUUIDGeneratorVersion = "4.0.1"
 val playJsonVersion          = "2.9.2"
-val googleDatastoreVersion   = "1.106.1"
+val googleDatastoreVersion   = "1.106.5"
 
 val akkaPersistence      = "com.typesafe.akka" %% "akka-persistence"       % akkaVersion
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
