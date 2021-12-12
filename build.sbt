@@ -2,30 +2,29 @@ import sbt.Keys.parallelExecution
 
 name := "akka-persistence-gcp-datastore"
 
-
 val mainScala = "2.13.7"
-val allScala  = Seq("2.12.15", mainScala)
+val allScala = Seq("2.12.15", mainScala)
 
-val akkaVersion              = "2.6.17"
+val akkaVersion = "2.6.17"
 val javaUUIDGeneratorVersion = "4.0.1"
-val playJsonVersion          = "2.9.2"
-val googleDatastoreVersion   = "1.106.5"
+val playJsonVersion = "2.9.2"
+val googleDatastoreVersion = "1.107.1"
 
-val akkaPersistence      = "com.typesafe.akka" %% "akka-persistence"       % akkaVersion
+val akkaPersistence = "com.typesafe.akka" %% "akka-persistence" % akkaVersion
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
-val akkaTCK              = "com.typesafe.akka" %% "akka-persistence-tck"   % akkaVersion
-val javaUUIDGenerator    = "com.fasterxml.uuid" % "java-uuid-generator"    % javaUUIDGeneratorVersion
-val playJson             = "com.typesafe.play" %% "play-json"              % playJsonVersion
-val googleDatastore      = "com.google.cloud"   % "google-cloud-datastore" % googleDatastoreVersion
+val akkaTCK = "com.typesafe.akka" %% "akka-persistence-tck" % akkaVersion
+val javaUUIDGenerator = "com.fasterxml.uuid" % "java-uuid-generator" % javaUUIDGeneratorVersion
+val playJson = "com.typesafe.play" %% "play-json" % playJsonVersion
+val googleDatastore = "com.google.cloud" % "google-cloud-datastore" % googleDatastoreVersion
 
 lazy val root = project
   .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      akkaPersistence   % "compile",
+      akkaPersistence % "compile",
       javaUUIDGenerator % "compile",
-      googleDatastore   % "compile",
-      playJson          % "compile",
+      googleDatastore % "compile",
+      playJson % "compile",
       akkaPersistenceQuery,
       akkaTCK
     )
@@ -75,7 +74,7 @@ scalacOptions ++= Seq(
       "-opt-warnings",
       "-opt:l:inline"
     )
-  case _             => Nil
+  case _ => Nil
 })
 
 // Publishing
