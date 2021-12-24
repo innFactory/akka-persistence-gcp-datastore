@@ -16,14 +16,14 @@
 
 package akka.persistence.datastore.connection
 import com.google.auth.oauth2.GoogleCredentials
-import com.google.cloud.datastore.{ Datastore, DatastoreOptions }
+import com.google.cloud.datastore.{Datastore, DatastoreOptions}
 import com.typesafe.config.ConfigFactory
 
 object DatastoreConnection {
 
-  private val config               = ConfigFactory.load()
-  private val projectId            = config.getString("datastore.projectid")
-  private val localDatastoreHost   = config.getString("datastore.testhost")
+  private val config = ConfigFactory.load()
+  private val projectId = config.getString("datastore.projectid")
+  private val localDatastoreHost = config.getString("datastore.testhost")
   private val datastore: Datastore = getDatastoreService
 
   private def getDatastoreService: Datastore =
@@ -39,7 +39,7 @@ object DatastoreConnection {
       initProductionDatastore
 
   private def initProductionDatastore: Datastore = {
-    val serviceAccountDatastore   =
+    val serviceAccountDatastore =
       getClass()
         .getClassLoader()
         .getResourceAsStream("datastore.json")

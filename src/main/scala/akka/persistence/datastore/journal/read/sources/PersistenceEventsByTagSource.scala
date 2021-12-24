@@ -19,21 +19,21 @@ package akka.persistence.datastore.journal.read.sources
 import akka.actor.ExtendedActorSystem
 import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
-import akka.persistence.datastore.serialization.{ DatastoreSerializer, SerializedPayload }
-import akka.persistence.query.{ EventEnvelope, Offset }
-import akka.stream.{ ActorAttributes, Attributes, Outlet, SourceShape }
-import akka.stream.stage.{ GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic }
+import akka.persistence.datastore.serialization.{DatastoreSerializer, SerializedPayload}
+import akka.persistence.query.{EventEnvelope, Offset}
+import akka.stream.{ActorAttributes, Attributes, Outlet, SourceShape}
+import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic}
 import com.google.cloud.datastore._
-import com.google.cloud.datastore.StructuredQuery.{ CompositeFilter, OrderBy, PropertyFilter }
+import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NonFatal
 
 class PersistenceEventsByTagSource(
-  tag: String,
-  timestamp: Long,
-  refreshInterval: FiniteDuration,
-  system: ExtendedActorSystem
+    tag: String,
+    timestamp: Long,
+    refreshInterval: FiniteDuration,
+    system: ExtendedActorSystem
 ) extends GraphStage[SourceShape[EventEnvelope]] {
 
   private val datastoreSerializer = new DatastoreSerializer(system)
@@ -44,22 +44,22 @@ class PersistenceEventsByTagSource(
 
   override def shape: SourceShape[EventEnvelope] = SourceShape(out)
 
-  private val sequenceNrKey    = DatastoreCommon.sequenceNrKey
+  private val sequenceNrKey = DatastoreCommon.sequenceNrKey
   private val persistenceIdKey = DatastoreCommon.persistenceIdKey
-  private val payloadKey       = DatastoreCommon.payloadKey
-  private val kind             = DatastoreCommon.journalKind
-  private val tagsKey          = DatastoreCommon.tagsKey
-  private val timestampKey     = DatastoreCommon.timestampKey
-  private val serializerKey    = DatastoreCommon.serializerKey
-  private val manifestKey      = DatastoreCommon.manifestKey
+  private val payloadKey = DatastoreCommon.payloadKey
+  private val kind = DatastoreCommon.journalKind
+  private val tagsKey = DatastoreCommon.tagsKey
+  private val timestampKey = DatastoreCommon.timestampKey
+  private val serializerKey = DatastoreCommon.serializerKey
+  private val manifestKey = DatastoreCommon.manifestKey
 
   override protected def initialAttributes: Attributes = Attributes(ActorAttributes.IODispatcher)
 
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) with OutHandler {
-      private val Limit            = 1000
+      private val Limit = 1000
       private var currentTimestamp = timestamp
-      private var buf              = Vector.empty[EventEnvelope]
+      private var buf = Vector.empty[EventEnvelope]
 
       override def preStart(): Unit =
         scheduleWithFixedDelay(Continue, refreshInterval, refreshInterval)
@@ -119,9 +119,9 @@ class PersistenceEventsByTagSource(
               .setOrderBy(OrderBy.asc(timestampKey))
               .setLimit(limit)
               .build()
-          val results: QueryResults[Entity]  =
+          val results: QueryResults[Entity] =
             DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency)
-          val b                              = Vector.newBuilder[EventEnvelope]
+          val b = Vector.newBuilder[EventEnvelope]
           while (results.hasNext) {
             val next = results.next()
             currentTimestamp = next.getLong(timestampKey)

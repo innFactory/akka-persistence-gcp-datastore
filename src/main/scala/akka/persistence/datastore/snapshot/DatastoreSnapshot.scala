@@ -15,13 +15,13 @@
  */
 
 package akka.persistence.datastore.snapshot
-import akka.actor.{ ActorLogging, ActorSystem }
+import akka.actor.{ActorLogging, ActorSystem}
 import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
 import akka.persistence.snapshot.SnapshotStore
-import akka.persistence.{ SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria }
+import akka.persistence.{SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria}
 import com.google.cloud.datastore._
-import com.google.cloud.datastore.StructuredQuery.{ CompositeFilter, OrderBy, PropertyFilter }
+import com.google.cloud.datastore.StructuredQuery.{CompositeFilter, OrderBy, PropertyFilter}
 import com.typesafe.config.Config
 
 import scala.concurrent._
@@ -31,15 +31,15 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
   import context.dispatcher
 
   override val actorSystem: ActorSystem = context.system
-  private val kind                      = DatastoreCommon.snapshotKind
-  private val sequenceNrKey             = DatastoreCommon.sequenceNrKey
-  private val persistenceIdKey          = DatastoreCommon.persistenceIdKey
-  override val config: Config           = context.system.settings.config.getConfig(configRootKey)
+  private val kind = DatastoreCommon.snapshotKind
+  private val sequenceNrKey = DatastoreCommon.sequenceNrKey
+  private val persistenceIdKey = DatastoreCommon.persistenceIdKey
+  override val config: Config = context.system.settings.config.getConfig(configRootKey)
 
   def deleteAsync(metadata: SnapshotMetadata): Future[Unit] =
     Future {
-      val keyFactory                     = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
-      val key                            = keyFactory.newKey(s"${metadata.timestamp + metadata.sequenceNr}${metadata.persistenceId}")
+      val keyFactory = DatastoreConnection.datastoreService.newKeyFactory.setKind(kind)
+      val key = keyFactory.newKey(s"${metadata.timestamp + metadata.sequenceNr}${metadata.persistenceId}")
       DatastoreConnection.datastoreService.delete(key)
       val query: StructuredQuery[Entity] =
         Query
@@ -52,9 +52,9 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
             )
           )
           .build()
-      val results: QueryResults[Entity]  =
+      val results: QueryResults[Entity] =
         DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
-      var result: Seq[Key]               = Seq.empty[Key]
+      var result: Seq[Key] = Seq.empty[Key]
       while (results.hasNext)
         result = results.next.getKey +: result
       DatastoreConnection.datastoreService.delete(result: _*)
@@ -73,9 +73,9 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
           )
         )
         .build()
-    val results: QueryResults[Entity]  =
+    val results: QueryResults[Entity] =
       DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
-    var result: Seq[Key]               = Seq.empty[Key]
+    var result: Seq[Key] = Seq.empty[Key]
     while (results.hasNext) {
       val next = results.next()
       if (
@@ -84,7 +84,7 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
       )
         result = next.getKey +: result
     }
-    val res                            = DatastoreConnection.datastoreService.delete(result: _*)
+    val res = DatastoreConnection.datastoreService.delete(result: _*)
     Future(res)
   }
 
@@ -107,7 +107,7 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
           )
           .setOrderBy(OrderBy.desc(timestampKey))
           .build()
-      val results: QueryResults[Entity]  =
+      val results: QueryResults[Entity] =
         DatastoreConnection.datastoreService.run(query, ReadOption.eventualConsistency())
 
       var result: Seq[Entity] = Seq.empty[Entity]
@@ -118,7 +118,7 @@ private[snapshot] class DatastoreSnapshot extends SnapshotStore with DatastoreSn
         )
           result = result :+ next
       }
-      val messagesToReplay    = result.take(loadAttempts).flatMap(dbObject => dbObjectToSelectedSnapshot(dbObject))
+      val messagesToReplay = result.take(loadAttempts).flatMap(dbObject => dbObjectToSelectedSnapshot(dbObject))
       Future(messagesToReplay.headOption)
     } catch {
       case e: Exception =>
