@@ -16,7 +16,7 @@
 
 package akka.persistence.datastore.serialization
 import akka.actor.ActorSystem
-import akka.serialization.{ Serialization, SerializationExtension, Serializers }
+import akka.serialization.{Serialization, SerializationExtension, Serializers}
 
 class DatastoreSerializer(actorSystem: ActorSystem) {
 
@@ -30,8 +30,8 @@ class DatastoreSerializer(actorSystem: ActorSystem) {
 
   def serializeSnapshot(snapshot: Any): SerializedSnapshot = {
     val snapshotData = snapshot.asInstanceOf[AnyRef]
-    val serializer   = serialization.findSerializerFor(snapshotData)
-    val manifest     = Serializers.manifestFor(serializer, snapshotData)
+    val serializer = serialization.findSerializerFor(snapshotData)
+    val manifest = Serializers.manifestFor(serializer, snapshotData)
     SerializedSnapshot(serialization.serialize(snapshotData).get, serializer.identifier, manifest)
   }
 
@@ -43,8 +43,8 @@ class DatastoreSerializer(actorSystem: ActorSystem) {
 
   private def serializeVersionOne(data: Any): SerializedPayload = {
     val dataToSerialize = data.asInstanceOf[AnyRef]
-    val serializer      = serialization.findSerializerFor(dataToSerialize)
-    val manifest        = Serializers.manifestFor(serializer, dataToSerialize)
+    val serializer = serialization.findSerializerFor(dataToSerialize)
+    val manifest = Serializers.manifestFor(serializer, dataToSerialize)
     SerializedPayload(serialization.serialize(dataToSerialize).get, serializer.identifier, manifest)
   }
 

@@ -31,7 +31,7 @@ trait DatastoreRecovery extends AsyncRecovery { this: DatastoreJournal =>
     Future(highestSequenceNrExecute(persistenceId, fromSequenceNr))
 
   def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long, max: Long)(
-    recoveryCallback: PersistentRepr => Unit
+      recoveryCallback: PersistentRepr => Unit
   ): Future[Unit] =
     Future {
       if (getMaxNumber(max) > 0) {

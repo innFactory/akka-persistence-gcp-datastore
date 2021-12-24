@@ -19,8 +19,8 @@ package akka.persistence.datastore.journal.read.sources
 import akka.actor.ExtendedActorSystem
 import akka.persistence.datastore.DatastoreCommon
 import akka.persistence.datastore.connection.DatastoreConnection
-import akka.stream.stage.{ GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic }
-import akka.stream.{ ActorAttributes, Attributes, Outlet, SourceShape }
+import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler, TimerGraphStageLogic}
+import akka.stream.{ActorAttributes, Attributes, Outlet, SourceShape}
 import com.google.cloud.datastore._
 
 import scala.concurrent.duration.FiniteDuration
@@ -30,12 +30,12 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
     extends GraphStage[SourceShape[String]] {
 
   private case object Continue
-  val out: Outlet[String]                 = Outlet(
+  val out: Outlet[String] = Outlet(
     "PersistenceIdsSource.out"
   )
   override def shape: SourceShape[String] = SourceShape(out)
-  private val persistenceIdKey            = DatastoreCommon.persistenceIdKey
-  private val kind                        = DatastoreCommon.journalKind
+  private val persistenceIdKey = DatastoreCommon.persistenceIdKey
+  private val kind = DatastoreCommon.journalKind
 
   override protected def initialAttributes: Attributes =
     Attributes(ActorAttributes.IODispatcher)
@@ -43,9 +43,9 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) with OutHandler {
       private val Limit = 1000
-      private var buf   = Vector.empty[String]
+      private var buf = Vector.empty[String]
 
-      private var contained          = List.empty[String]
+      private var contained = List.empty[String]
       private val lastCursor: Cursor = null
 
       override def preStart(): Unit =
@@ -107,7 +107,7 @@ class PersistenceIdsSource(refreshInterval: FiniteDuration, system: ExtendedActo
           val results: QueryResults[ProjectionEntity] =
             DatastoreConnection.datastoreService
               .run(query, ReadOption.eventualConsistency)
-          val b                                       = Vector.newBuilder[String]
+          val b = Vector.newBuilder[String]
           while (results.hasNext) {
             val next = results.next()
             if (!contained.contains(next.getString(persistenceIdKey))) {

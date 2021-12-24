@@ -55,19 +55,19 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config)
    */
   override def eventsByTag(tag: String, offset: Offset): Source[EventEnvelope, NotUsed] =
     offset match {
-      case Sequence(o)          =>
+      case Sequence(o) =>
         Source.fromGraph(new PersistenceEventsByTagSource(tag, o, refreshInterval, system))
-      case NoOffset             => eventsByTag(tag, Sequence(0L)) //recursive
+      case NoOffset => eventsByTag(tag, Sequence(0L)) // recursive
       case TimeBasedUUID(value) =>
         Source.fromGraph(new PersistenceEventsByTagSource(tag, value.timestamp(), refreshInterval, system))
-      case _                    =>
+      case _ =>
         throw new IllegalArgumentException("Datastore Journal does not support " + offset.getClass.getName + " offsets")
     }
 
   override def eventsByPersistenceId(
-    persistenceId: String,
-    fromSequenceNr: Long,
-    toSequenceNr: Long
+      persistenceId: String,
+      fromSequenceNr: Long,
+      toSequenceNr: Long
   ): Source[EventEnvelope, NotUsed] =
     Source.fromGraph(
       new PersistenceEventsByPersistenceIdSource(persistenceId, fromSequenceNr, toSequenceNr, refreshInterval, system)

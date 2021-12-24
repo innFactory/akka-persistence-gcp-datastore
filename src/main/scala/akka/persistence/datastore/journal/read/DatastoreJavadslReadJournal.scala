@@ -17,7 +17,7 @@
 package akka.persistence.datastore.journal.read
 import akka.NotUsed
 import akka.persistence.query._
-import akka.stream.javadsl.{ Source => JavaSource }
+import akka.stream.javadsl.{Source => JavaSource}
 
 class DatastoreJavadslReadJournal(scaladslReadJournal: DatastoreScaladslReadJournal)
     extends akka.persistence.query.javadsl.ReadJournal
@@ -30,9 +30,9 @@ class DatastoreJavadslReadJournal(scaladslReadJournal: DatastoreScaladslReadJour
     scaladslReadJournal.eventsByTag(tag, offset).asJava
 
   override def eventsByPersistenceId(
-    persistenceId: String,
-    fromSequenceNr: Long = 0L,
-    toSequenceNr: Long = Long.MaxValue
+      persistenceId: String,
+      fromSequenceNr: Long = 0L,
+      toSequenceNr: Long = Long.MaxValue
   ): JavaSource[EventEnvelope, NotUsed] =
     scaladslReadJournal.eventsByPersistenceId(persistenceId, fromSequenceNr, toSequenceNr).asJava
 
