@@ -60,7 +60,7 @@ scalacOptions ++= Seq(
   "-Ywarn-unused:patvars,-implicits",
   "-Ywarn-value-discard"
 ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-  case Some((2, 12)) =>
+  case Some(2, 12) =>
     Seq(
       "-Xsource:2.13",
       "-Yno-adapted-args",
