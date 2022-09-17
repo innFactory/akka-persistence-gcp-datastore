@@ -81,7 +81,7 @@ jobs:
             - name: Install gcloud beta
               run: |
                   gcloud components install cloud-datastore-emulator
-            - name: Test with Scala 2.12.15
+            - name: Test with Scala 2.12.17
               run: |
                   gcloud beta emulators datastore start --no-store-on-disk --consistency=1.0 &
                   sleep 10
