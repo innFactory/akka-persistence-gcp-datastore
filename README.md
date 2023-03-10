@@ -67,7 +67,7 @@ akka {
 ### Datastore Configuration
 
 1. Google Cloud Project with Datastore or FireStore in Datastore mode enabled  
-2. Create a index.yml file with content bolow in the project that will use this plugin:
+2. Create a index.yml file with content below in the project that will use this plugin:
 
     ```
     indexes:
