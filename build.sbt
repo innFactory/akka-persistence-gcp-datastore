@@ -6,7 +6,7 @@ val mainScala = "2.13.7"
 val allScala = Seq("2.12.15", mainScala)
 
 val akkaVersion = "2.6.17"
-val javaUUIDGeneratorVersion = "4.0.1"
+val javaUUIDGeneratorVersion = "4.3.0"
 val playJsonVersion = "2.9.2"
 val googleDatastoreVersion = "2.2.9"
 
