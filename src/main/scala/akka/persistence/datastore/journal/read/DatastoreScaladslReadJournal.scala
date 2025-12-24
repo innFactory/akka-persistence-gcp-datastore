@@ -57,7 +57,7 @@ class DatastoreScaladslReadJournal(system: ExtendedActorSystem, config: Config)
     offset match {
       case Sequence(o) =>
         Source.fromGraph(new PersistenceEventsByTagSource(tag, o, refreshInterval, system))
-      case NoOffset => eventsByTag(tag, Sequence(0L)) // recursive
+      case NoOffset             => eventsByTag(tag, Sequence(0L)) // recursive
       case TimeBasedUUID(value) =>
         Source.fromGraph(new PersistenceEventsByTagSource(tag, value.timestamp(), refreshInterval, system))
       case _ =>
